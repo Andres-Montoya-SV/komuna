@@ -7,6 +7,7 @@ import { MarketplaceItem, Product, Service, Pet, Job } from '@/types/marketplace
 import Navbar from '@/components/Navbar/Navbar.component';
 import FadeIn from '@/components/Animations/FadeIn.component';
 import { sampleItems } from '@/app/data/sampleItems';
+import Image from 'next/image';
 
 export default function ItemDetailPage() {
   const params = useParams();
@@ -89,7 +90,7 @@ export default function ItemDetailPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Item not found</h1>
-          <p className="text-base-content/70 mb-4">The item you're looking for doesn't exist.</p>
+          <p className="text-base-content/70 mb-4">The item you&apos;re looking for doesn&apos;t exist.</p>
           <button onClick={() => router.push('/')} className="btn btn-primary">
             Back to Home
           </button>
@@ -129,10 +130,12 @@ export default function ItemDetailPage() {
               className="card bg-white border-2 border-primary/10 shadow-lg"
             >
             <figure className="aspect-square">
-              <img
+              <Image
                 src={item.image}
                 alt={item.name}
                 className="w-full h-full object-cover rounded-t-lg"
+                width={600}
+                height={600}
               />
             </figure>
             {item.rating && (
@@ -154,7 +157,6 @@ export default function ItemDetailPage() {
           {/* Details Section */}
           <FadeIn delay={0.2}>
             <div className="space-y-6">
-            <div>
               <div className="flex items-center gap-3 mb-3">
                 <span className={`badge badge-lg ${
                   isProduct ? 'badge-primary' :
@@ -191,6 +193,7 @@ export default function ItemDetailPage() {
                 </div>
               )}
             </div>
+            </FadeIn>
 
             {/* Type-specific details */}
             {isService && (
@@ -288,7 +291,6 @@ export default function ItemDetailPage() {
                   Save
                 </button>
               </div>
-            </div>
           </div>
         </div>
       </div>

@@ -8,6 +8,7 @@ import StaggerContainer from '@/components/Animations/StaggerContainer.component
 import StaggerItem from '@/components/Animations/StaggerItem.component';
 import GoogleAd from '@/components/Ads/GoogleAd.component';
 import { Store } from '@/types/auth.types';
+import Image from 'next/image';
 
 // Mock stores data - in production, fetch from Firebase
 const mockStores: Store[] = [
@@ -195,7 +196,7 @@ export default function StoresPage() {
                 onClick={() => window.location.href = `/store/${store.id}`}
               >
                 <figure className="h-48 bg-gradient-to-br from-primary/10 to-primary/5">
-                  <img
+                  <Image
                     src={store.logo || 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=400'}
                     alt={store.name}
                     className="w-full h-full object-cover"
@@ -208,7 +209,7 @@ export default function StoresPage() {
                   </p>
                   <div className="flex items-center justify-between mt-4">
                     <div>
-                      {renderStars(store.rating, store.id)}
+                      {store.rating !== undefined && renderStars(store.rating, store.id)}
                       <p className="text-xs text-base-content/60 mt-1">
                         {store.totalSales} sales
                       </p>
