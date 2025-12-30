@@ -192,10 +192,8 @@ export default function ItemDetailPage() {
                   )}
                 </div>
               )}
-            </div>
-            </FadeIn>
 
-            {/* Type-specific details */}
+              {/* Type-specific details */}
             {isService && (
               <div className="card bg-base-100 border-2 border-primary/10 p-4">
                 <h3 className="font-semibold mb-2">Service Details</h3>
@@ -291,7 +289,9 @@ export default function ItemDetailPage() {
                   Save
                 </button>
               </div>
-          </div>
+            </div>
+            </div>
+          </FadeIn>
         </div>
       </div>
     </div>

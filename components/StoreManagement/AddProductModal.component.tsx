@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { useState, FormEvent } from 'react';
@@ -41,7 +42,6 @@ export default function AddProductModal({
     location: '',
     // Job specific
     employmentType: 'full-time' as 'full-time' | 'part-time' | 'contract' | 'freelance',
-    location: '',
     requirements: [] as string[],
   });
   const [errors, setErrors] = useState<Record<string, string>>({});

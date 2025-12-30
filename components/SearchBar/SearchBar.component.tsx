@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { MarketplaceItem } from '@/types/marketplace.types';
+import { MarketplaceItem, Product } from '@/types/marketplace.types';
 import { sanitizeSearchQuery } from '@/utils/security';
 import SearchResults from './SearchResults.component';
 
@@ -40,11 +40,11 @@ export default function SearchBar({
     const lowerQuery = sanitized.toLowerCase();
 
     const results = products
-      .filter((item) => {
+      .filter((item): item is Product => {
         const nameMatch = item.name.toLowerCase().includes(lowerQuery);
         const descMatch = item.description.toLowerCase().includes(lowerQuery);
         const categoryMatch = item.category.toLowerCase().includes(lowerQuery);
-        return nameMatch || descMatch || categoryMatch;
+        return (nameMatch || descMatch || categoryMatch) && item.type === 'product';
       })
       .slice(0, maxResults);
 
@@ -54,6 +54,7 @@ export default function SearchBar({
   // Debounce search input
   useEffect(() => {
     if (!showLiveResults || !query.trim()) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFilteredResults([]);
       return;
     }
@@ -96,10 +97,12 @@ export default function SearchBar({
     inputRef.current?.blur();
   };
 
-  const handleResultClick = (product: Product) => {
-    onSearch?.(sanitizeSearchQuery(product.name));
-    setShowResults(false);
-    inputRef.current?.blur();
+  const handleResultClick = (item: MarketplaceItem) => {
+    if (item.type === 'product') {
+      onSearch?.(sanitizeSearchQuery(item.name));
+      setShowResults(false);
+      inputRef.current?.blur();
+    }
   };
 
   const handleFocus = () => {

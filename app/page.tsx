@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import ProductList from '@/components/ProductList/ProductList.component';
@@ -14,8 +15,9 @@ import SponsoredSection from '@/components/Sponsored/SponsoredSection.component'
 import GoogleAd from '@/components/Ads/GoogleAd.component';
 import { MarketplaceItem, FilterOptions, CartItem, ItemType } from '@/types/marketplace.types';
 import { sampleItems } from '@/app/data/sampleItems';
+import Link from 'next/link';
 
-export default function Home() {
+function HomeContent() {
   const searchParams = useSearchParams();
   const [items] = useState<MarketplaceItem[]>(sampleItems);
   const [filters, setFilters] = useState<FilterOptions>({
@@ -34,6 +36,7 @@ export default function Home() {
     // Sync URL param with filters
     const typeParam = searchParams.get('type') as ItemType;
     if (typeParam) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFilters((prev) => ({ ...prev, type: typeParam }));
     }
     setCurrentPage(1); // Reset to first page when filter changes
@@ -101,11 +104,11 @@ export default function Home() {
   const paginatedItems = filteredItems.slice(startIndex, endIndex);
 
   useEffect(() => {
-    // Reset to page 1 if current page is beyond total pages
     if (currentPage > totalPages && totalPages > 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCurrentPage(1);
     }
-  }, [totalPages, currentPage]);
+  }, [totalPages, currentPage]);  
 
   const handleAddToCart = (item: MarketplaceItem) => {
     setCart((prevCart) => {
@@ -282,11 +285,11 @@ export default function Home() {
             <div>
               <h3 className="text-lg font-bold mb-4">Marketplace</h3>
               <ul className="space-y-2 text-sm">
-                <li><a href="/?type=product" className="text-white/80 hover:text-white transition-colors">Products</a></li>
-                <li><a href="/?type=service" className="text-white/80 hover:text-white transition-colors">Services</a></li>
-                <li><a href="/?type=pet" className="text-white/80 hover:text-white transition-colors">Pets</a></li>
-                <li><a href="/?type=job" className="text-white/80 hover:text-white transition-colors">Jobs</a></li>
-                <li><a href="/store/manage" className="text-white/80 hover:text-white transition-colors">Sell on Komuna</a></li>
+                <li><Link href="/?type=product" className="text-white/80 hover:text-white transition-colors">Products</Link></li>
+                <li><Link href="/?type=service" className="text-white/80 hover:text-white transition-colors">Services</Link></li>
+                <li><Link href="/?type=pet" className="text-white/80 hover:text-white transition-colors">Pets</Link></li>
+                <li><Link href="/?type=job" className="text-white/80 hover:text-white transition-colors">Jobs</Link></li>
+                <li><Link href="/store/manage" className="text-white/80 hover:text-white transition-colors">Sell on Komuna</Link></li>
               </ul>
             </div>
 
@@ -321,5 +324,17 @@ export default function Home() {
         </div>
       </footer>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-b from-white to-base-200 flex items-center justify-center">
+        <div className="loading loading-spinner loading-lg"></div>
+      </div>
+    }>
+      <HomeContent />
+    </Suspense>
   );
 }

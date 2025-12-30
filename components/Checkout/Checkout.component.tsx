@@ -28,7 +28,7 @@ export default function Checkout({
   const [orderData, setOrderData] = useState<Partial<OrderData>>({});
 
   const total = items.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
+    (sum, item) => sum + item.item.price * item.quantity,
     0
   );
 
