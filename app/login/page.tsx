@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import LoginForm from '@/components/Auth/LoginForm.component';
@@ -8,7 +8,7 @@ import FadeIn from '@/components/Animations/FadeIn.component';
 import { LoginCredentials } from '@/types/auth.types';
 import { firebaseAuth } from '@/lib/firebase/auth';
 
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
@@ -39,6 +39,7 @@ export default function LoginPage() {
       } else {
         setError('Invalid email or password');
       }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setError(err.message || 'An error occurred during login. Please try again.');
     } finally {
@@ -101,6 +102,18 @@ export default function LoginPage() {
         </FadeIn>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-b from-white to-base-200 flex items-center justify-center">
+        <div className="loading loading-spinner loading-lg"></div>
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   );
 }
 

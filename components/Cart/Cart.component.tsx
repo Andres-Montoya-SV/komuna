@@ -26,9 +26,9 @@ export default function Cart({
   }
 
   const total = items.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
+    (sum, cartItem) => sum + cartItem.item.price * cartItem.quantity,
     0
-  );
+  );  
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -37,7 +37,7 @@ export default function Cart({
         <div className="lg:w-2/3 space-y-4">
           {items.map((item) => (
             <CartItemComponent
-              key={item.product.id}
+              key={item.item.id}
               item={item}
               onUpdateQuantity={onUpdateQuantity}
               onRemove={onRemoveItem}

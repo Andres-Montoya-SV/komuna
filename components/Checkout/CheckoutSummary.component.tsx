@@ -27,13 +27,13 @@ export default function CheckoutSummary({
         <h2 className="card-title text-primary text-xl pb-4 border-b-2 border-primary/10">Order Summary</h2>
         <div className="space-y-3 mt-4 max-h-64 overflow-y-auto">
           {items.map((item) => (
-            <div key={item.product.id} className="flex justify-between items-start text-sm pb-2 border-b border-base-200 last:border-b-0">
+            <div key={item.item.id} className="flex justify-between items-start text-sm pb-2 border-b border-base-200 last:border-b-0">
               <div className="flex-1 min-w-0 pr-2">
-                <span className="font-medium block truncate">{item.product.name}</span>
+                <span className="font-medium block truncate">{item.item.name}</span>
                 <span className="text-base-content/60">Qty: {item.quantity}</span>
               </div>
               <span className="font-semibold text-primary whitespace-nowrap">
-                {formatPrice(item.product.price * item.quantity)}
+                {formatPrice(item.item.price * item.quantity)}
               </span>
             </div>
           ))}
