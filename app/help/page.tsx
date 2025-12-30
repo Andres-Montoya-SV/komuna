@@ -42,7 +42,7 @@ export default function HelpPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-base-200">
       <Navbar />
-      
+
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold text-primary mb-4">Help Center</h1>
@@ -85,4 +85,3 @@ export default function HelpPage() {
     </div>
   );
 }
-

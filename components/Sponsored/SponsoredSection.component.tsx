@@ -19,7 +19,7 @@ export default function SponsoredSection({
 }: SponsoredSectionProps) {
   // Get top-rated items as sponsored
   const sponsoredItems = items
-    .filter(item => item.rating && item.rating >= 4.5)
+    .filter((item) => item.rating && item.rating >= 4.5)
     .sort((a, b) => (b.rating || 0) - (a.rating || 0))
     .slice(0, 4);
 
@@ -67,4 +67,3 @@ export default function SponsoredSection({
     </section>
   );
 }
-

@@ -9,10 +9,7 @@ interface CheckoutFormProps {
   onDataChange: (data: Partial<OrderData>) => void;
 }
 
-export default function CheckoutForm({
-  orderData,
-  onDataChange,
-}: CheckoutFormProps) {
+export default function CheckoutForm({ orderData, onDataChange }: CheckoutFormProps) {
   const [errors, setErrors] = useState<Partial<Record<keyof OrderData, string>>>({});
 
   const validateField = (field: keyof OrderData, value: string) => {
@@ -69,8 +66,10 @@ export default function CheckoutForm({
   return (
     <div className="card bg-white border-2 border-primary/10 shadow-lg">
       <div className="card-body space-y-5">
-        <h2 className="card-title text-primary text-2xl pb-4 border-b-2 border-primary/10">Shipping Information</h2>
-        
+        <h2 className="card-title text-primary text-2xl pb-4 border-b-2 border-primary/10">
+          Shipping Information
+        </h2>
+
         <div className="form-control">
           <label className="label">
             <span className="label-text font-semibold">Full Name</span>
@@ -205,4 +204,3 @@ export default function CheckoutForm({
     </div>
   );
 }
-

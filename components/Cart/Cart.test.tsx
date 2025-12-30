@@ -32,29 +32,27 @@ const mockCartItems: CartItem[] = [
 describe('Cart', () => {
   it('renders cart items', () => {
     render(<Cart items={mockCartItems} />);
-    
+
     expect(screen.getByText('Product 1')).toBeInTheDocument();
     expect(screen.getByText('Product 2')).toBeInTheDocument();
   });
 
   it('displays empty cart message when no items', () => {
     render(<Cart items={[]} />);
-    
+
     expect(screen.getByText('Your cart is empty')).toBeInTheDocument();
   });
 
   it('calculates and displays correct total', () => {
     render(<Cart items={mockCartItems} />);
-    
+
     // Total should be (10 * 2) + (20 * 1) = 40
     expect(screen.getByText('$40.00')).toBeInTheDocument();
   });
 
   it('displays cart title', () => {
     render(<Cart items={mockCartItems} />);
-    
+
     expect(screen.getByText('Shopping Cart')).toBeInTheDocument();
   });
 });
-
-

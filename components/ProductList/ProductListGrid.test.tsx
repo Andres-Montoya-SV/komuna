@@ -10,6 +10,7 @@ const mockProducts: Product[] = [
     price: 10,
     image: '/img1.jpg',
     category: 'Category 1',
+    type: 'product',
     stock: 5,
   },
   {
@@ -19,31 +20,30 @@ const mockProducts: Product[] = [
     price: 20,
     image: '/img2.jpg',
     category: 'Category 2',
+    type: 'product',
     stock: 10,
   },
 ];
 
 describe('ProductListGrid', () => {
   it('renders all products', () => {
-    render(<ProductListGrid products={mockProducts} />);
-    
+    render(<ProductListGrid items={mockProducts} />);
+
     expect(screen.getByText('Product 1')).toBeInTheDocument();
     expect(screen.getByText('Product 2')).toBeInTheDocument();
   });
 
   it('displays empty message when no products', () => {
-    render(<ProductListGrid products={[]} />);
-    
-    expect(screen.getByText('No products found')).toBeInTheDocument();
+    render(<ProductListGrid items={[]} />);
+
+    expect(screen.getByText('No items found')).toBeInTheDocument();
   });
 
   it('calls onAddToCart when provided', () => {
     const onAddToCart = jest.fn();
-    render(<ProductListGrid products={mockProducts} onAddToCart={onAddToCart} />);
-    
+    render(<ProductListGrid items={mockProducts} onAddToCart={onAddToCart} />);
+
     // The ProductCard component will handle this, so we just verify it's passed
     expect(screen.getByText('Product 1')).toBeInTheDocument();
   });
 });
-
-

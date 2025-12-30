@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
@@ -33,7 +34,7 @@ function RegisterContent() {
       const user = await firebaseAuth.register(data);
       if (user) {
         localStorage.setItem('user', JSON.stringify(user));
-        
+
         const redirectTo = searchParams.get('redirect') || '/';
         // If seller and no redirect, go to store setup
         if (user.role === 'seller' && !searchParams.get('redirect')) {
@@ -67,41 +68,61 @@ function RegisterContent() {
             aria-label="Go back"
           >
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
             Back
           </motion.button>
         </FadeIn>
-        
+
         <FadeIn delay={0.1}>
           <div className="card bg-white border-2 border-primary/10 shadow-xl">
-          <div className="card-body">
-            <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                </svg>
+            <div className="card-body">
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg
+                    className="w-10 h-10 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                    />
+                  </svg>
+                </div>
+                <h1 className="text-3xl font-bold text-primary">Create Account</h1>
+                <p className="text-base-content/70 mt-2">Join Komuna marketplace today</p>
               </div>
-              <h1 className="text-3xl font-bold text-primary">Create Account</h1>
-              <p className="text-base-content/70 mt-2">Join Komuna marketplace today</p>
+
+              {error && (
+                <div className="alert alert-error mb-4">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                  <span>{error}</span>
+                </div>
+              )}
+
+              <RegisterForm
+                onRegister={handleRegister}
+                onSwitchToLogin={() => router.push('/login')}
+                isLoading={isLoading}
+              />
             </div>
-
-            {error && (
-              <div className="alert alert-error mb-4">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-                <span>{error}</span>
-              </div>
-            )}
-
-            <RegisterForm
-              onRegister={handleRegister}
-              onSwitchToLogin={() => router.push('/login')}
-              isLoading={isLoading}
-            />
           </div>
-        </div>
         </FadeIn>
       </div>
     </div>
@@ -110,13 +131,14 @@ function RegisterContent() {
 
 export default function RegisterPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-b from-white to-base-200 flex items-center justify-center">
-        <div className="loading loading-spinner loading-lg"></div>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gradient-to-b from-white to-base-200 flex items-center justify-center">
+          <div className="loading loading-spinner loading-lg"></div>
+        </div>
+      }
+    >
       <RegisterContent />
     </Suspense>
   );
 }
-

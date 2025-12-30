@@ -54,12 +54,12 @@ export default function ContactPage() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    
+
     if (!validate()) return;
 
     setIsSubmitting(true);
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     setIsSubmitting(false);
     setIsSubmitted(true);
   };
@@ -72,12 +72,22 @@ export default function ContactPage() {
           <div className="max-w-2xl mx-auto text-center">
             <div className="card bg-white border-2 border-primary/10 shadow-lg">
               <div className="card-body">
-                <svg className="w-16 h-16 text-success mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  className="w-16 h-16 text-success mx-auto mb-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
                 <h2 className="text-2xl font-bold mb-2">Message Sent!</h2>
                 <p className="text-base-content/80 mb-4">
-                  Thank you for contacting us. We'll get back to you as soon as possible.
+                  Thank you for contacting us. We&apos;ll get back to you as soon as possible.
                 </p>
                 <button
                   onClick={() => {
@@ -99,11 +109,11 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-base-200">
       <Navbar />
-      
+
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-2xl mx-auto">
           <h1 className="text-4xl font-bold text-primary mb-6">Contact Us</h1>
-          
+
           <div className="card bg-white border-2 border-primary/10 shadow-lg mb-6">
             <div className="card-body">
               <div className="space-y-4 mb-6">
@@ -121,9 +131,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold mb-2">Address</h3>
-                  <p className="text-base-content/80">
-                    San Salvador, El Salvador
-                  </p>
+                  <p className="text-base-content/80">San Salvador, El Salvador</p>
                 </div>
               </div>
             </div>
@@ -132,7 +140,7 @@ export default function ContactPage() {
           <div className="card bg-white border-2 border-primary/10 shadow-lg">
             <div className="card-body">
               <h2 className="text-2xl font-bold mb-4">Send us a Message</h2>
-              
+
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="form-control">
                   <label className="label">
@@ -226,4 +234,3 @@ export default function ContactPage() {
     </div>
   );
 }
-

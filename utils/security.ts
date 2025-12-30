@@ -12,17 +12,17 @@ export function sanitizeInput(input: string): string {
 
   // Remove HTML tags
   let sanitized = input.replace(/<[^>]*>/g, '');
-  
+
   // Remove script-related content
   sanitized = sanitized.replace(/javascript:/gi, '');
   sanitized = sanitized.replace(/on\w+=/gi, '');
-  
+
   // Remove control characters except newlines and tabs
   sanitized = sanitized.replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]/g, '');
-  
+
   // Trim whitespace
   sanitized = sanitized.trim();
-  
+
   return sanitized;
 }
 
@@ -31,7 +31,7 @@ export function sanitizeInput(input: string): string {
  */
 export function sanitizeSearchQuery(query: string): string {
   const sanitized = sanitizeInput(query);
-  
+
   // Limit length to prevent DoS
   const maxLength = 100;
   return sanitized.slice(0, maxLength);
@@ -44,7 +44,7 @@ export function isValidEmail(email: string): boolean {
   if (!email || typeof email !== 'string') {
     return false;
   }
-  
+
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email.trim());
 }
@@ -56,7 +56,7 @@ export function isValidName(name: string): boolean {
   if (!name || typeof name !== 'string') {
     return false;
   }
-  
+
   // Allow letters, spaces, hyphens, apostrophes (for names like O'Connor)
   const nameRegex = /^[a-zA-Z\s'-]+$/;
   return nameRegex.test(name.trim()) && name.trim().length >= 2;
@@ -69,7 +69,7 @@ export function isValidZipCode(zipCode: string): boolean {
   if (!zipCode || typeof zipCode !== 'string') {
     return false;
   }
-  
+
   // Allow alphanumeric zip codes (e.g., US: 12345, UK: SW1A 1AA)
   const zipRegex = /^[A-Z0-9\s-]{4,10}$/i;
   return zipRegex.test(zipCode.trim());
@@ -82,7 +82,7 @@ export function isValidPrice(price: number): boolean {
   if (typeof price !== 'number' || isNaN(price)) {
     return false;
   }
-  
+
   return price >= 0 && price <= 999999.99;
 }
 
@@ -93,7 +93,7 @@ export function escapeHtml(text: string): string {
   if (typeof text !== 'string') {
     return '';
   }
-  
+
   const map: Record<string, string> = {
     '&': '&amp;',
     '<': '&lt;',
@@ -101,7 +101,7 @@ export function escapeHtml(text: string): string {
     '"': '&quot;',
     "'": '&#039;',
   };
-  
+
   return text.replace(/[&<>"']/g, (m) => map[m]);
 }
 
@@ -112,8 +112,6 @@ export function isValidQuantity(quantity: number): boolean {
   if (!Number.isInteger(quantity)) {
     return false;
   }
-  
+
   return quantity > 0 && quantity <= 999;
 }
-
-

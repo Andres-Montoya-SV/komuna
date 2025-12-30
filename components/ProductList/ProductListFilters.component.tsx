@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { FilterOptions, MarketplaceItem, ItemType } from '@/types/marketplace.types';
+import { FilterOptions, MarketplaceItem } from '@/types/marketplace.types';
 import FilterCategory from '../FilterPanel/FilterCategory.component';
 import FilterPriceRange from '../FilterPanel/FilterPriceRange.component';
 import FilterSort from '../FilterPanel/FilterSort.component';
@@ -19,8 +19,8 @@ export default function ProductListFilters({
 }: ProductListFiltersProps) {
   const [localFilters, setLocalFilters] = useState<FilterOptions>(filters || {});
 
-  const categories = Array.from(new Set(items.map(p => p.category)));
-  const maxPrice = Math.max(...items.map(p => p.price), 0);
+  const categories = Array.from(new Set(items.map((p) => p.category)));
+  const maxPrice = Math.max(...items.map((p) => p.price), 0);
 
   const handleFilterChange = (newFilters: Partial<FilterOptions>) => {
     const updated = { ...localFilters, ...newFilters };
@@ -38,7 +38,7 @@ export default function ProductListFilters({
     <div className="bg-white border-2 border-primary/10 p-5 rounded-lg shadow-sm sticky top-4">
       <div className="flex items-center justify-between mb-6 pb-4 border-b-2 border-primary/10">
         <h3 className="text-xl font-bold text-primary">Filters</h3>
-        <button 
+        <button
           className="btn btn-sm btn-ghost text-primary hover:bg-primary/10"
           onClick={handleReset}
         >
@@ -67,4 +67,3 @@ export default function ProductListFilters({
     </div>
   );
 }
-

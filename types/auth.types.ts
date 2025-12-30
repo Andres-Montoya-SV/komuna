@@ -45,5 +45,3 @@ export interface StoreFormData {
   logo?: string;
   banner?: string;
 }
-
-

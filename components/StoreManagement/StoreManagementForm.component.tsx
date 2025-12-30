@@ -20,10 +20,7 @@ const availableCategories = [
   'Toys',
 ];
 
-export default function StoreManagementForm({
-  store,
-  onUpdate,
-}: StoreManagementFormProps) {
+export default function StoreManagementForm({ store, onUpdate }: StoreManagementFormProps) {
   const [formData, setFormData] = useState<StoreFormData>({
     name: store?.name || '',
     description: store?.description || '',
@@ -62,7 +59,7 @@ export default function StoreManagementForm({
     try {
       onUpdate?.(sanitizedData);
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
     } finally {
       setIsSaving(false);
     }
@@ -72,7 +69,7 @@ export default function StoreManagementForm({
     <div className="card bg-white border-2 border-primary/10 shadow-lg sticky top-4">
       <div className="card-body">
         <h2 className="card-title text-primary mb-4">Store Settings</h2>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="form-control">
             <label className="label">
@@ -160,4 +157,3 @@ export default function StoreManagementForm({
     </div>
   );
 }
-

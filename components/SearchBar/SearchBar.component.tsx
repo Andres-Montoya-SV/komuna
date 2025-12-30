@@ -14,8 +14,8 @@ interface SearchBarProps {
   maxResults?: number;
 }
 
-export default function SearchBar({ 
-  onSearch, 
+export default function SearchBar({
+  onSearch,
   placeholder = 'Search products, services, pets, jobs...',
   initialValue = '',
   products = [],
@@ -30,26 +30,29 @@ export default function SearchBar({
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Debounced search function
-  const performSearch = useCallback((searchQuery: string) => {
-    if (!showLiveResults || !products || !products.length || !searchQuery.trim()) {
-      setFilteredResults([]);
-      return;
-    }
+  const performSearch = useCallback(
+    (searchQuery: string) => {
+      if (!showLiveResults || !products || !products.length || !searchQuery.trim()) {
+        setFilteredResults([]);
+        return;
+      }
 
-    const sanitized = sanitizeSearchQuery(searchQuery);
-    const lowerQuery = sanitized.toLowerCase();
+      const sanitized = sanitizeSearchQuery(searchQuery);
+      const lowerQuery = sanitized.toLowerCase();
 
-    const results = products
-      .filter((item): item is Product => {
-        const nameMatch = item.name.toLowerCase().includes(lowerQuery);
-        const descMatch = item.description.toLowerCase().includes(lowerQuery);
-        const categoryMatch = item.category.toLowerCase().includes(lowerQuery);
-        return (nameMatch || descMatch || categoryMatch) && item.type === 'product';
-      })
-      .slice(0, maxResults);
+      const results = products
+        .filter((item): item is Product => {
+          const nameMatch = item.name.toLowerCase().includes(lowerQuery);
+          const descMatch = item.description.toLowerCase().includes(lowerQuery);
+          const categoryMatch = item.category.toLowerCase().includes(lowerQuery);
+          return (nameMatch || descMatch || categoryMatch) && item.type === 'product';
+        })
+        .slice(0, maxResults);
 
-    setFilteredResults(results);
-  }, [products, showLiveResults, maxResults]);
+      setFilteredResults(results);
+    },
+    [products, showLiveResults, maxResults]
+  );
 
   // Debounce search input
   useEffect(() => {
@@ -82,7 +85,7 @@ export default function SearchBar({
     const value = sanitizeSearchQuery(e.target.value);
     setQuery(value);
     setShowResults(true);
-    
+
     // Trigger immediate search for short queries (less debounce needed)
     if (value.trim()) {
       performSearch(value);
@@ -135,8 +138,8 @@ export default function SearchBar({
               autoComplete="off"
               aria-label="Search products"
             />
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="btn btn-primary text-white hover:bg-primary-dark h-12 min-w-[60px]"
               aria-label="Search"
             >
@@ -158,13 +161,9 @@ export default function SearchBar({
           </div>
         </div>
       </form>
-      
+
       {showLiveResults && showResults && filteredResults.length > 0 && (
-        <SearchResults 
-          results={filteredResults}
-          query={query}
-          onResultClick={handleResultClick}
-        />
+        <SearchResults results={filteredResults} query={query} onResultClick={handleResultClick} />
       )}
     </div>
   );

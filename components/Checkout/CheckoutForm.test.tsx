@@ -5,7 +5,7 @@ import CheckoutForm from './CheckoutForm.component';
 describe('CheckoutForm', () => {
   it('renders all form fields', () => {
     render(<CheckoutForm orderData={{}} onDataChange={() => {}} />);
-    
+
     expect(screen.getByLabelText(/Full Name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Email/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Address/i)).toBeInTheDocument();
@@ -23,9 +23,9 @@ describe('CheckoutForm', () => {
       zipCode: '10001',
       paymentMethod: 'credit-card',
     };
-    
+
     render(<CheckoutForm orderData={orderData} onDataChange={() => {}} />);
-    
+
     expect(screen.getByDisplayValue('John Doe')).toBeInTheDocument();
     expect(screen.getByDisplayValue('john@example.com')).toBeInTheDocument();
     expect(screen.getByDisplayValue('123 Main St')).toBeInTheDocument();
@@ -38,12 +38,10 @@ describe('CheckoutForm', () => {
     const user = userEvent.setup();
     const onDataChange = jest.fn();
     render(<CheckoutForm orderData={{}} onDataChange={onDataChange} />);
-    
+
     const nameInput = screen.getByLabelText(/Full Name/i);
     await user.type(nameInput, 'John Doe');
-    
+
     expect(onDataChange).toHaveBeenCalled();
   });
 });
-
-

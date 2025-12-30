@@ -4,18 +4,14 @@ interface ProductCardImageProps {
   onClick?: () => void;
 }
 
-export default function ProductCardImage({ 
-  image, 
-  name, 
-  onClick 
-}: ProductCardImageProps) {
+export default function ProductCardImage({ image, name, onClick }: ProductCardImageProps) {
   return (
-    <figure 
+    <figure
       className="cursor-pointer relative overflow-hidden bg-base-200 aspect-square"
       onClick={onClick}
     >
-      <img 
-        src={image} 
+      <img
+        src={image}
         alt={name}
         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
         loading="lazy"
@@ -29,4 +25,3 @@ export default function ProductCardImage({
     </figure>
   );
 }
-

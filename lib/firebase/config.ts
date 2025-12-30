@@ -32,4 +32,3 @@ if (typeof window !== 'undefined') {
 
 // Export with proper types
 export { app, auth, db };
-

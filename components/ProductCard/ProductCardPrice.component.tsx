@@ -1,4 +1,4 @@
-import { MarketplaceItem, ItemType } from '@/types/marketplace.types';
+import { MarketplaceItem, ItemType, Pet } from '@/types/marketplace.types';
 
 interface ProductCardPriceProps {
   price: number;
@@ -42,21 +42,15 @@ export default function ProductCardPrice({ price, stock, type, item }: ProductCa
         <span className="text-xs font-medium text-error">Out of Stock</span>
       );
     }
-    
+
     if (type === 'service' || type === 'job') {
-      return (
-        <span className="text-xs font-medium text-primary">
-          Available
-        </span>
-      );
+      return <span className="text-xs font-medium text-primary">Available</span>;
     }
 
     if (type === 'pet') {
-      const pet = item as any;
+      const pet = item as Pet;
       return pet.location ? (
-        <span className="text-xs font-medium text-primary">
-          📍 {pet.location}
-        </span>
+        <span className="text-xs font-medium text-primary">📍 {pet.location}</span>
       ) : null;
     }
 
@@ -66,19 +60,10 @@ export default function ProductCardPrice({ price, stock, type, item }: ProductCa
   return (
     <div className="flex items-center justify-between pt-2 border-t border-base-200">
       <div className="flex flex-col">
-        <span className="text-2xl font-bold text-primary">
-          {formatPrice(price)}
-        </span>
-        {getPriceLabel() && (
-          <span className="text-xs text-base-content/50">
-            {getPriceLabel()}
-          </span>
-        )}
+        <span className="text-2xl font-bold text-primary">{formatPrice(price)}</span>
+        {getPriceLabel() && <span className="text-xs text-base-content/50">{getPriceLabel()}</span>}
       </div>
-      <div className="flex items-center gap-2">
-        {getStockInfo()}
-      </div>
+      <div className="flex items-center gap-2">{getStockInfo()}</div>
     </div>
   );
 }
-

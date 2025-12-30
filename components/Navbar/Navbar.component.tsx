@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { User } from '@/types/auth.types';
 
 interface NavItem {
   label: string;
@@ -18,7 +19,7 @@ const navItems: NavItem[] = [
 ];
 
 export default function Navbar() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Get user from localStorage on client side
@@ -71,18 +72,27 @@ export default function Navbar() {
                     {user.name?.charAt(0).toUpperCase() || 'U'}
                   </div>
                 </div>
-                <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow-lg border-2 border-primary/10 mt-2">
-                  <li><Link href="/profile">Profile</Link></li>
+                <ul
+                  tabIndex={0}
+                  className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow-lg border-2 border-primary/10 mt-2"
+                >
+                  <li>
+                    <Link href="/profile">Profile</Link>
+                  </li>
                   {user.role === 'seller' && (
                     <>
-                      <li><Link href="/store/manage">Manage Store</Link></li>
-                      <li><Link href={`/store/${user.id}`}>View Store</Link></li>
+                      <li>
+                        <Link href="/store/manage">Manage Store</Link>
+                      </li>
+                      <li>
+                        <Link href={`/store/${user.id}`}>View Store</Link>
+                      </li>
                     </>
                   )}
                   <li className="divider"></li>
                   <li>
-                    <a 
-                      href="#" 
+                    <a
+                      href="#"
                       onClick={async (e) => {
                         e.preventDefault();
                         try {
@@ -105,14 +115,14 @@ export default function Navbar() {
               </div>
             ) : (
               <>
-                <Link 
-                  href={`/login${typeof window !== 'undefined' && window.location.pathname !== '/' ? `?redirect=${encodeURIComponent(window.location.pathname)}` : ''}`} 
+                <Link
+                  href={`/login${typeof window !== 'undefined' && window.location.pathname !== '/' ? `?redirect=${encodeURIComponent(window.location.pathname)}` : ''}`}
                   className="btn btn-ghost btn-sm hidden sm:inline-flex"
                 >
                   Login
                 </Link>
-                <Link 
-                  href={`/register${typeof window !== 'undefined' && window.location.pathname !== '/' ? `?redirect=${encodeURIComponent(window.location.pathname)}` : ''}`} 
+                <Link
+                  href={`/register${typeof window !== 'undefined' && window.location.pathname !== '/' ? `?redirect=${encodeURIComponent(window.location.pathname)}` : ''}`}
                   className="btn btn-primary btn-sm text-white"
                 >
                   Sign Up
@@ -129,9 +139,19 @@ export default function Navbar() {
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   {isMenuOpen ? (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   ) : (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 6h16M4 12h16M4 18h16"
+                    />
                   )}
                 </svg>
               </button>
@@ -167,4 +187,3 @@ export default function Navbar() {
     </nav>
   );
 }
-

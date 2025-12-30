@@ -19,7 +19,7 @@ export default function ProfileInfo({ user }: ProfileInfoProps) {
     <div className="card bg-white border-2 border-primary/10 shadow-lg">
       <div className="card-body">
         <h2 className="card-title text-primary mb-4">Profile Information</h2>
-        
+
         <div className="space-y-4">
           <div>
             <label className="label">
@@ -73,4 +73,3 @@ export default function ProfileInfo({ user }: ProfileInfoProps) {
     </div>
   );
 }
-

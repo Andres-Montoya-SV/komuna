@@ -32,36 +32,34 @@ const mockCartItems: CartItem[] = [
 describe('CheckoutSummary', () => {
   it('renders all cart items', () => {
     render(<CheckoutSummary items={mockCartItems} total={40} />);
-    
+
     expect(screen.getByText('Product 1 x2')).toBeInTheDocument();
     expect(screen.getByText('Product 2 x1')).toBeInTheDocument();
   });
 
   it('displays subtotal correctly', () => {
     render(<CheckoutSummary items={mockCartItems} total={40} />);
-    
+
     expect(screen.getByText('$40.00')).toBeInTheDocument();
   });
 
   it('displays free shipping for orders over $100', () => {
     render(<CheckoutSummary items={mockCartItems} total={150} />);
-    
+
     expect(screen.getByText('Free')).toBeInTheDocument();
   });
 
   it('displays shipping cost for orders under $100', () => {
     render(<CheckoutSummary items={mockCartItems} total={50} />);
-    
+
     expect(screen.getByText('$10.00')).toBeInTheDocument();
   });
 
   it('calculates and displays final total correctly', () => {
     render(<CheckoutSummary items={mockCartItems} total={50} />);
-    
+
     // Should show final total of 60 (50 + 10 shipping)
     const totalElements = screen.getAllByText(/\$60\.00/);
     expect(totalElements.length).toBeGreaterThan(0);
   });
 });
-
-

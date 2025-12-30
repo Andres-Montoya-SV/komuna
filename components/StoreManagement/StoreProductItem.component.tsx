@@ -9,11 +9,7 @@ interface StoreProductItemProps {
   onUpdate?: (product: MarketplaceItem) => void;
 }
 
-export default function StoreProductItem({
-  product,
-  onDelete,
-  onUpdate,
-}: StoreProductItemProps) {
+export default function StoreProductItem({ product, onDelete, onUpdate }: StoreProductItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedProduct, setEditedProduct] = useState<MarketplaceItem>(product);
 
@@ -50,7 +46,9 @@ export default function StoreProductItem({
               className="input input-bordered"
               placeholder="Price"
               value={editedProduct.price}
-              onChange={(e) => setEditedProduct({ ...editedProduct, price: parseFloat(e.target.value) || 0 })}
+              onChange={(e) =>
+                setEditedProduct({ ...editedProduct, price: parseFloat(e.target.value) || 0 })
+              }
             />
             {editedProduct.type === 'product' && (
               <input
@@ -58,7 +56,12 @@ export default function StoreProductItem({
                 className="input input-bordered"
                 placeholder="Stock"
                 value={(editedProduct as Product).stock}
-                onChange={(e) => setEditedProduct({ ...editedProduct, stock: parseInt(e.target.value) || 0 } as Product)}
+                onChange={(e) =>
+                  setEditedProduct({
+                    ...editedProduct,
+                    stock: parseInt(e.target.value) || 0,
+                  } as Product)
+                }
               />
             )}
           </div>
@@ -88,16 +91,23 @@ export default function StoreProductItem({
           <p className="text-sm text-base-content/70 line-clamp-2">{product.description}</p>
           <div className="flex items-center gap-4 mt-2 flex-wrap">
             <span className="font-bold text-primary">{formatPrice(product.price)}</span>
-            <span className={`badge ${
-              product.type === 'product' ? 'badge-primary' :
-              product.type === 'service' ? 'badge-success' :
-              product.type === 'pet' ? 'badge-warning' :
-              'badge-info'
-            }`}>
+            <span
+              className={`badge ${
+                product.type === 'product'
+                  ? 'badge-primary'
+                  : product.type === 'service'
+                    ? 'badge-success'
+                    : product.type === 'pet'
+                      ? 'badge-warning'
+                      : 'badge-info'
+              }`}
+            >
               {product.type}
             </span>
             {product.type === 'product' && (
-              <span className="text-sm text-base-content/60">Stock: {(product as Product).stock}</span>
+              <span className="text-sm text-base-content/60">
+                Stock: {(product as Product).stock}
+              </span>
             )}
             {product.rating && (
               <span className="text-sm text-base-content/60">
@@ -107,10 +117,7 @@ export default function StoreProductItem({
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          <button
-            className="btn btn-sm btn-primary"
-            onClick={() => setIsEditing(true)}
-          >
+          <button className="btn btn-sm btn-primary" onClick={() => setIsEditing(true)}>
             Edit
           </button>
           {onDelete && (

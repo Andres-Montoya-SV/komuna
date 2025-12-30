@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { MarketplaceItem, Product, Service, Pet, Job } from '@/types/marketplace.types';
+import { MarketplaceItem, Product } from '@/types/marketplace.types';
 import ProductCardImage from './ProductCardImage.component';
 import ProductCardInfo from './ProductCardInfo.component';
 import ProductCardPrice from './ProductCardPrice.component';
@@ -13,11 +13,7 @@ interface ProductCardProps {
   onViewDetails?: (item: MarketplaceItem) => void;
 }
 
-export default function ProductCard({ 
-  product, 
-  onAddToCart, 
-  onViewDetails 
-}: ProductCardProps) {
+export default function ProductCard({ product, onAddToCart, onViewDetails }: ProductCardProps) {
   const getTypeBadge = () => {
     const badges = {
       product: { label: 'Product', color: 'badge-primary' },
@@ -40,15 +36,13 @@ export default function ProductCard({
       className="card bg-white border-2 border-base-200 hover:border-primary/30 shadow-md hover:shadow-xl transition-all duration-300 rounded-lg overflow-hidden group"
     >
       <div className="relative">
-        <ProductCardImage 
-          image={product.image} 
+        <ProductCardImage
+          image={product.image}
           name={product.name}
           onClick={() => onViewDetails?.(product)}
         />
         <div className="absolute top-2 left-2">
-          <span className={`badge ${badge.color} text-white`}>
-            {badge.label}
-          </span>
+          <span className={`badge ${badge.color} text-white`}>{badge.label}</span>
         </div>
         {stock === 0 && (
           <div className="absolute top-2 right-2 bg-error text-error-content px-2 py-1 rounded-full text-xs font-semibold">
@@ -65,20 +59,15 @@ export default function ProductCard({
         )}
       </div>
       <div className="card-body p-4 gap-2">
-        <ProductCardInfo 
+        <ProductCardInfo
           name={product.name}
           description={product.description}
           rating={product.rating}
           reviews={product.reviews}
           item={product}
         />
-        <ProductCardPrice 
-          price={product.price} 
-          stock={stock}
-          type={product.type}
-          item={product}
-        />
-        <ProductCardActions 
+        <ProductCardPrice price={product.price} stock={stock} type={product.type} item={product} />
+        <ProductCardActions
           product={product}
           onAddToCart={onAddToCart}
           onViewDetails={onViewDetails}
@@ -87,4 +76,3 @@ export default function ProductCard({
     </motion.div>
   );
 }
-

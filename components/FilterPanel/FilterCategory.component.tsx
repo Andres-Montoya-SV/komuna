@@ -26,7 +26,10 @@ export default function FilterCategory({
           <span className="label-text font-medium">All Categories</span>
         </label>
         {categories.map((category) => (
-          <label key={category} className="label cursor-pointer justify-start gap-3 p-3 rounded-lg hover:bg-primary/5 transition-colors">
+          <label
+            key={category}
+            className="label cursor-pointer justify-start gap-3 p-3 rounded-lg hover:bg-primary/5 transition-colors"
+          >
             <input
               type="radio"
               name="category"
@@ -41,4 +44,3 @@ export default function FilterCategory({
     </div>
   );
 }
-

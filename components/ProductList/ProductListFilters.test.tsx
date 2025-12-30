@@ -10,6 +10,7 @@ const mockProducts: Product[] = [
     price: 10,
     image: '/img1.jpg',
     category: 'Electronics',
+    type: 'product',
     stock: 5,
   },
   {
@@ -19,50 +20,49 @@ const mockProducts: Product[] = [
     price: 100,
     image: '/img2.jpg',
     category: 'Clothing',
+    type: 'product',
     stock: 10,
   },
 ];
 
 describe('ProductListFilters', () => {
   it('renders filter components', () => {
-    render(<ProductListFilters products={mockProducts} onFilterChange={() => {}} />);
-    
+    render(<ProductListFilters items={mockProducts} onFilterChange={() => {}} />);
+
     expect(screen.getByText('Filters')).toBeInTheDocument();
-    expect(screen.getByText('Reset')).toBeInTheDocument();
+    expect(screen.getByText('Clear All')).toBeInTheDocument();
   });
 
   it('displays all categories from products', () => {
-    render(<ProductListFilters products={mockProducts} onFilterChange={() => {}} />);
-    
+    render(<ProductListFilters items={mockProducts} onFilterChange={() => {}} />);
+
     expect(screen.getByText('Electronics')).toBeInTheDocument();
     expect(screen.getByText('Clothing')).toBeInTheDocument();
   });
 
   it('calls onFilterChange when filters are updated', () => {
     const onFilterChange = jest.fn();
-    render(<ProductListFilters products={mockProducts} onFilterChange={onFilterChange} />);
-    
+    render(<ProductListFilters items={mockProducts} onFilterChange={onFilterChange} />);
+
     const electronicsRadio = screen.getByLabelText('Electronics');
     fireEvent.click(electronicsRadio);
-    
+
     expect(onFilterChange).toHaveBeenCalled();
   });
 
   it('resets filters when reset button is clicked', () => {
     const onFilterChange = jest.fn();
     render(
-      <ProductListFilters 
-        products={mockProducts} 
+      <ProductListFilters
+        items={mockProducts}
         filters={{ category: 'Electronics' }}
-        onFilterChange={onFilterChange} 
+        onFilterChange={onFilterChange}
       />
     );
-    
-    const resetButton = screen.getByText('Reset');
+
+    const resetButton = screen.getByText('Clear All');
     fireEvent.click(resetButton);
-    
+
     expect(onFilterChange).toHaveBeenCalledWith({});
   });
 });
-
-

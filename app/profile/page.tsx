@@ -55,12 +55,12 @@ export default function ProfilePage() {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <ProfileHeader user={user} />
-          
+
           <div className="grid md:grid-cols-3 gap-6 mt-6">
             <div className="md:col-span-2">
               <ProfileInfo user={user} />
             </div>
-            
+
             <div className="md:col-span-1">
               <ProfileActions
                 user={user}
@@ -83,4 +83,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-

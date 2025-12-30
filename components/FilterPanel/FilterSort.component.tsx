@@ -7,10 +7,7 @@ interface FilterSortProps {
   onSortChange: (sortBy?: FilterOptions['sortBy']) => void;
 }
 
-export default function FilterSort({
-  sortBy,
-  onSortChange,
-}: FilterSortProps) {
+export default function FilterSort({ sortBy, onSortChange }: FilterSortProps) {
   const sortOptions: { value: FilterOptions['sortBy']; label: string }[] = [
     { value: undefined, label: 'Default' },
     { value: 'price-asc', label: 'Price: Low to High' },
@@ -26,7 +23,7 @@ export default function FilterSort({
       <select
         className="select select-bordered w-full border-2 border-primary/20 focus:border-primary focus:outline-none bg-white"
         value={sortBy || ''}
-        onChange={(e) => onSortChange(e.target.value as FilterOptions['sortBy'] || undefined)}
+        onChange={(e) => onSortChange((e.target.value as FilterOptions['sortBy']) || undefined)}
       >
         {sortOptions.map((option) => (
           <option key={option.value || 'default'} value={option.value || ''}>
@@ -37,4 +34,3 @@ export default function FilterSort({
     </div>
   );
 }
-

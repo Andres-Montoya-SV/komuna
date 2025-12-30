@@ -6,11 +6,7 @@ interface CartSummaryProps {
   onCheckout?: () => void;
 }
 
-export default function CartSummary({
-  total,
-  itemCount,
-  onCheckout,
-}: CartSummaryProps) {
+export default function CartSummary({ total, itemCount, onCheckout }: CartSummaryProps) {
   const formatPrice = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -24,7 +20,9 @@ export default function CartSummary({
   return (
     <div className="card bg-white border-2 border-primary/10 shadow-lg sticky top-4">
       <div className="card-body">
-        <h2 className="card-title text-primary text-xl pb-4 border-b-2 border-primary/10">Order Summary</h2>
+        <h2 className="card-title text-primary text-xl pb-4 border-b-2 border-primary/10">
+          Order Summary
+        </h2>
         <div className="space-y-3 mt-4">
           <div className="flex justify-between items-center">
             <span className="text-base-content/70">Items ({itemCount})</span>
@@ -43,7 +41,11 @@ export default function CartSummary({
           {total < 100 && (
             <div className="alert alert-info py-2 bg-primary/10 border-primary/20">
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                <path
+                  fillRule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                  clipRule="evenodd"
+                />
               </svg>
               <span className="text-xs">
                 Add ${(100 - total).toFixed(2)} more for free shipping!
@@ -57,13 +59,18 @@ export default function CartSummary({
           </div>
         </div>
         <div className="card-actions mt-6">
-          <button 
+          <button
             className="btn btn-primary w-full text-white hover:bg-primary-dark h-12 text-lg font-semibold"
             onClick={onCheckout}
           >
             Proceed to Checkout
             <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 7l5 5m0 0l-5 5m5-5H6"
+              />
             </svg>
           </button>
         </div>
@@ -71,4 +78,3 @@ export default function CartSummary({
     </div>
   );
 }
-

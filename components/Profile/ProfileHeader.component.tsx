@@ -20,22 +20,24 @@ export default function ProfileHeader({ user }: ProfileHeaderProps) {
               )}
             </div>
           </div>
-          
+
           <div className="flex-1 text-center md:text-left">
             <h1 className="text-3xl font-bold text-primary mb-2">{user.name}</h1>
             <p className="text-base-content/70 mb-4">{user.email}</p>
             <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-              <span className={`badge badge-lg ${
-                user.role === 'seller' ? 'badge-primary' : 
-                user.role === 'admin' ? 'badge-accent' : 
-                'badge-ghost'
-              }`}>
+              <span
+                className={`badge badge-lg ${
+                  user.role === 'seller'
+                    ? 'badge-primary'
+                    : user.role === 'admin'
+                      ? 'badge-accent'
+                      : 'badge-ghost'
+                }`}
+              >
                 {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
               </span>
               {user.role === 'seller' && (
-                <span className="badge badge-lg badge-outline">
-                  Store Owner
-                </span>
+                <span className="badge badge-lg badge-outline">Store Owner</span>
               )}
             </div>
           </div>
@@ -44,4 +46,3 @@ export default function ProfileHeader({ user }: ProfileHeaderProps) {
     </div>
   );
 }
-

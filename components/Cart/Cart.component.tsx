@@ -11,12 +11,7 @@ interface CartProps {
   onCheckout?: () => void;
 }
 
-export default function Cart({
-  items,
-  onUpdateQuantity,
-  onRemoveItem,
-  onCheckout,
-}: CartProps) {
+export default function Cart({ items, onUpdateQuantity, onRemoveItem, onCheckout }: CartProps) {
   if (items.length === 0) {
     return (
       <div className="text-center py-12">
@@ -25,10 +20,7 @@ export default function Cart({
     );
   }
 
-  const total = items.reduce(
-    (sum, cartItem) => sum + cartItem.item.price * cartItem.quantity,
-    0
-  );  
+  const total = items.reduce((sum, cartItem) => sum + cartItem.item.price * cartItem.quantity, 0);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -45,15 +37,9 @@ export default function Cart({
           ))}
         </div>
         <div className="lg:w-1/3">
-          <CartSummary 
-            total={total}
-            itemCount={items.length}
-            onCheckout={onCheckout}
-          />
+          <CartSummary total={total} itemCount={items.length} onCheckout={onCheckout} />
         </div>
       </div>
     </div>
   );
 }
-
-

@@ -9,11 +9,7 @@ interface HoverScaleProps {
   scale?: number;
 }
 
-export default function HoverScale({ 
-  children, 
-  className = '',
-  scale = 1.02 
-}: HoverScaleProps) {
+export default function HoverScale({ children, className = '', scale = 1.02 }: HoverScaleProps) {
   return (
     <motion.div
       whileHover={{ scale }}
@@ -24,4 +20,3 @@ export default function HoverScale({
     </motion.div>
   );
 }
-

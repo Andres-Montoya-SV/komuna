@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navbar from '@/components/Navbar/Navbar.component';
 import FadeIn from '@/components/Animations/FadeIn.component';
@@ -93,17 +93,18 @@ const mockStores: Store[] = [
 ];
 
 export default function StoresPage() {
-  const [stores, setStores] = useState<Store[]>(mockStores);
+  const [stores] = useState<Store[]>(mockStores);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
-  const categories = ['all', ...new Set(mockStores.flatMap(store => store.categories || []))];
+  const categories = ['all', ...new Set(mockStores.flatMap((store) => store.categories || []))];
 
-  const filteredStores = stores.filter(store => {
-    const matchesSearch = store.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         store.description?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || 
-                           store.categories?.includes(selectedCategory);
+  const filteredStores = stores.filter((store) => {
+    const matchesSearch =
+      store.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      store.description?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory =
+      selectedCategory === 'all' || store.categories?.includes(selectedCategory);
     return matchesSearch && matchesCategory;
   });
 
@@ -125,7 +126,10 @@ export default function StoresPage() {
                 <stop offset="50%" stopColor="transparent" stopOpacity="1" />
               </linearGradient>
             </defs>
-            <path fill={`url(#half-${storeId})`} d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+            <path
+              fill={`url(#half-${storeId})`}
+              d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"
+            />
           </svg>
         )}
         <span className="text-sm font-semibold ml-1">{rating.toFixed(1)}</span>
@@ -141,9 +145,7 @@ export default function StoresPage() {
         <FadeIn>
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-primary mb-4">Browse Stores</h1>
-            <p className="text-base-content/70">
-              Discover amazing stores on Komuna marketplace
-            </p>
+            <p className="text-base-content/70">Discover amazing stores on Komuna marketplace</p>
           </div>
         </FadeIn>
 
@@ -178,41 +180,36 @@ export default function StoresPage() {
         {/* Google Ad */}
         <FadeIn delay={0.2}>
           <div className="mb-8">
-            <GoogleAd
-              adSlot="1234567890"
-              adFormat="horizontal"
-              className="max-w-4xl mx-auto"
-            />
+            <GoogleAd adSlot="1234567890" adFormat="horizontal" className="max-w-4xl mx-auto" />
           </div>
         </FadeIn>
 
         {/* Stores Grid */}
         <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {filteredStores.map((store, index) => (
+          {filteredStores.map((store) => (
             <StaggerItem key={store.id}>
               <motion.div
                 whileHover={{ y: -4 }}
                 className="card bg-white border-2 border-base-200 hover:border-primary/30 shadow-md hover:shadow-xl transition-all duration-300 rounded-lg overflow-hidden cursor-pointer"
-                onClick={() => window.location.href = `/store/${store.id}`}
+                onClick={() => (window.location.href = `/store/${store.id}`)}
               >
                 <figure className="h-48 bg-gradient-to-br from-primary/10 to-primary/5">
                   <Image
-                    src={store.logo || 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=400'}
+                    src={
+                      store.logo ||
+                      'https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=400'
+                    }
                     alt={store.name}
                     className="w-full h-full object-cover"
                   />
                 </figure>
                 <div className="card-body p-4">
                   <h2 className="card-title text-lg text-primary">{store.name}</h2>
-                  <p className="text-sm text-base-content/70 line-clamp-2">
-                    {store.description}
-                  </p>
+                  <p className="text-sm text-base-content/70 line-clamp-2">{store.description}</p>
                   <div className="flex items-center justify-between mt-4">
                     <div>
                       {store.rating !== undefined && renderStars(store.rating, store.id)}
-                      <p className="text-xs text-base-content/60 mt-1">
-                        {store.totalSales} sales
-                      </p>
+                      <p className="text-xs text-base-content/60 mt-1">{store.totalSales} sales</p>
                     </div>
                     <div className="text-right">
                       <p className="text-sm font-semibold">{store.totalProducts}</p>
@@ -246,4 +243,3 @@ export default function StoresPage() {
     </div>
   );
 }
-

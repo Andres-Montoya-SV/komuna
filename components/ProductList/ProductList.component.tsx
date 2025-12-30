@@ -1,7 +1,6 @@
 'use client';
 
 import { MarketplaceItem, FilterOptions } from '@/types/marketplace.types';
-import ProductCard from '../ProductCard/ProductCard.component';
 import ProductListFilters from './ProductListFilters.component';
 import ProductListGrid from './ProductListGrid.component';
 
@@ -23,20 +22,11 @@ export default function ProductList({
   return (
     <div className="flex flex-col lg:flex-row gap-8">
       <aside className="lg:w-1/4">
-        <ProductListFilters 
-          filters={filters}
-          onFilterChange={onFilterChange}
-          items={items}
-        />
+        <ProductListFilters filters={filters} onFilterChange={onFilterChange} items={items} />
       </aside>
       <main className="lg:w-3/4">
-        <ProductListGrid 
-          items={items}
-          onAddToCart={onAddToCart}
-          onViewDetails={onViewDetails}
-        />
+        <ProductListGrid items={items} onAddToCart={onAddToCart} onViewDetails={onViewDetails} />
       </main>
     </div>
   );
 }
-

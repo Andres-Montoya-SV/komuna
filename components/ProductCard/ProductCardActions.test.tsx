@@ -9,21 +9,22 @@ const mockProduct: Product = {
   price: 29.99,
   image: '/test.jpg',
   category: 'Electronics',
+  type: 'product',
   stock: 10,
 };
 
 describe('ProductCardActions', () => {
   it('renders view details and add to cart buttons', () => {
     render(<ProductCardActions product={mockProduct} />);
-    
-    expect(screen.getByText('View Details')).toBeInTheDocument();
+
+    expect(screen.getByText('Details')).toBeInTheDocument();
     expect(screen.getByText('Add to Cart')).toBeInTheDocument();
   });
 
   it('calls onAddToCart when add to cart is clicked', () => {
     const onAddToCart = jest.fn();
     render(<ProductCardActions product={mockProduct} onAddToCart={onAddToCart} />);
-    
+
     fireEvent.click(screen.getByText('Add to Cart'));
     expect(onAddToCart).toHaveBeenCalledWith(mockProduct);
   });
@@ -31,18 +32,16 @@ describe('ProductCardActions', () => {
   it('calls onViewDetails when view details is clicked', () => {
     const onViewDetails = jest.fn();
     render(<ProductCardActions product={mockProduct} onViewDetails={onViewDetails} />);
-    
-    fireEvent.click(screen.getByText('View Details'));
+
+    fireEvent.click(screen.getByText('Details'));
     expect(onViewDetails).toHaveBeenCalledWith(mockProduct);
   });
 
   it('disables add to cart button when out of stock', () => {
     const outOfStockProduct = { ...mockProduct, stock: 0 };
     render(<ProductCardActions product={outOfStockProduct} />);
-    
+
     const button = screen.getByText('Out of Stock');
     expect(button).toBeDisabled();
   });
 });
-
-

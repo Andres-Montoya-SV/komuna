@@ -34,8 +34,8 @@ export default function StoreManagePage() {
     const fetchStoreData = async () => {
       setIsLoading(true);
       // In a real app, fetch from API
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
       // Mock store data
       const mockStore: Store = {
         id: user.id,
@@ -49,7 +49,7 @@ export default function StoreManagePage() {
         status: 'active',
         categories: [],
       };
-      
+
       setStore(mockStore);
       setIsLoading(false);
     };
@@ -73,11 +73,11 @@ export default function StoreManagePage() {
   };
 
   const handleDeleteProduct = (itemId: string) => {
-    setProducts(products.filter(p => p.id !== itemId));
+    setProducts(products.filter((p) => p.id !== itemId));
   };
 
   const handleUpdateProduct = (updatedItem: MarketplaceItem) => {
-    setProducts(products.map(p => p.id === updatedItem.id ? updatedItem : p));
+    setProducts(products.map((p) => (p.id === updatedItem.id ? updatedItem : p)));
   };
 
   if (isLoading) {
@@ -91,19 +91,13 @@ export default function StoreManagePage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-base-200">
       <div className="container mx-auto px-4 py-8">
-        <StoreManagementHeader 
-          store={store}
-          onAddProduct={() => setShowAddProduct(true)}
-        />
-        
+        <StoreManagementHeader store={store} onAddProduct={() => setShowAddProduct(true)} />
+
         <div className="grid lg:grid-cols-3 gap-6 mt-6">
           <div className="lg:col-span-1">
-            <StoreManagementForm
-              store={store}
-              onUpdate={handleStoreUpdate}
-            />
+            <StoreManagementForm store={store} onUpdate={handleStoreUpdate} />
           </div>
-          
+
           <div className="lg:col-span-2">
             <StoreProductList
               products={products}

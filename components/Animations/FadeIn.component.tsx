@@ -10,11 +10,11 @@ interface FadeInProps {
   className?: string;
 }
 
-export default function FadeIn({ 
-  children, 
-  delay = 0, 
+export default function FadeIn({
+  children,
+  delay = 0,
   duration = 0.5,
-  className = '' 
+  className = '',
 }: FadeInProps) {
   return (
     <motion.div
@@ -27,4 +27,3 @@ export default function FadeIn({
     </motion.div>
   );
 }
-

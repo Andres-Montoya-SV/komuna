@@ -3,7 +3,6 @@
 import { useState, FormEvent } from 'react';
 import { LoginCredentials } from '@/types/auth.types';
 import { sanitizeInput, isValidEmail } from '@/utils/security';
-import { validatePassword } from '@/utils/auth';
 
 interface LoginFormProps {
   onLogin?: (credentials: LoginCredentials) => void;
@@ -25,7 +24,7 @@ export default function LoginForm({
   const handleChange = (field: keyof LoginCredentials, value: string) => {
     const sanitized = field === 'email' ? sanitizeInput(value.toLowerCase()) : value;
     setFormData((prev) => ({ ...prev, [field]: sanitized }));
-    
+
     // Clear error for this field
     if (errors[field]) {
       setErrors((prev) => {
@@ -57,7 +56,7 @@ export default function LoginForm({
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     if (validate()) {
       onLogin?.(formData);
     }
@@ -125,7 +124,7 @@ export default function LoginForm({
       {onSwitchToRegister && (
         <div className="text-center mt-4">
           <span className="text-sm text-base-content/70">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <button
               type="button"
               onClick={onSwitchToRegister}
@@ -139,4 +138,3 @@ export default function LoginForm({
     </form>
   );
 }
-

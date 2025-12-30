@@ -13,7 +13,7 @@ export async function login(credentials: LoginCredentials): Promise<User | null>
   // In a real app, this would be an API call
   // For now, simulate authentication
   const sanitizedEmail = sanitizeInput(credentials.email.toLowerCase());
-  
+
   // Mock user - in production, verify password hash
   const mockUser: User = {
     id: '1',
@@ -24,7 +24,7 @@ export async function login(credentials: LoginCredentials): Promise<User | null>
   };
 
   // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 500));
 
   return mockUser;
 }
@@ -60,7 +60,7 @@ export async function register(data: RegisterData): Promise<User | null> {
   };
 
   // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 500));
 
   return newUser;
 }
@@ -68,9 +68,9 @@ export async function register(data: RegisterData): Promise<User | null> {
 /**
  * Simulates account deletion
  */
-export async function deleteAccount(userId: string): Promise<boolean> {
+export async function deleteAccount(_userId: string): Promise<boolean> {
   // In a real app, this would delete the user via API
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 500));
   return true;
 }
 
@@ -101,5 +101,3 @@ export function validatePassword(password: string): { valid: boolean; errors: st
     errors,
   };
 }
-
-

@@ -9,19 +9,18 @@ interface SearchResultsProps {
   onResultClick: (item: MarketplaceItem) => void;
 }
 
-export default function SearchResults({ 
-  results, 
-  query, 
-  onResultClick 
-}: SearchResultsProps) {
+export default function SearchResults({ results, query, onResultClick }: SearchResultsProps) {
   const highlightMatch = (text: string, searchTerm: string) => {
     if (!searchTerm.trim()) return escapeHtml(text);
-    
+
     const escapedText = escapeHtml(text);
     const escapedQuery = escapeHtml(searchTerm);
     const regex = new RegExp(`(${escapedQuery})`, 'gi');
-    
-    return escapedText.replace(regex, '<mark class="bg-accent/30 text-base-content font-semibold">$1</mark>');
+
+    return escapedText.replace(
+      regex,
+      '<mark class="bg-accent/30 text-base-content font-semibold">$1</mark>'
+    );
   };
 
   if (results.length === 0) {
@@ -49,27 +48,28 @@ export default function SearchResults({
               />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <h4 
+                  <h4
                     className="font-semibold text-base text-base-content truncate"
-                    dangerouslySetInnerHTML={{ 
-                      __html: highlightMatch(item.name, query) 
+                    dangerouslySetInnerHTML={{
+                      __html: highlightMatch(item.name, query),
                     }}
                   />
-                  <span className={`badge badge-sm ${
-                    item.type === 'product' ? 'badge-primary' :
-                    item.type === 'service' ? 'badge-success' :
-                    item.type === 'pet' ? 'badge-warning' :
-                    'badge-info'
-                  }`}>
+                  <span
+                    className={`badge badge-sm ${
+                      item.type === 'product'
+                        ? 'badge-primary'
+                        : item.type === 'service'
+                          ? 'badge-success'
+                          : item.type === 'pet'
+                            ? 'badge-warning'
+                            : 'badge-info'
+                    }`}
+                  >
                     {item.type}
                   </span>
                 </div>
-                <p className="text-sm text-base-content/70 line-clamp-1 mt-1">
-                  {item.category}
-                </p>
-                <p className="text-primary font-bold text-sm mt-1">
-                  ${item.price.toFixed(2)}
-                </p>
+                <p className="text-sm text-base-content/70 line-clamp-1 mt-1">{item.category}</p>
+                <p className="text-primary font-bold text-sm mt-1">${item.price.toFixed(2)}</p>
               </div>
               {item.rating && (
                 <div className="flex items-center gap-1 flex-shrink-0">

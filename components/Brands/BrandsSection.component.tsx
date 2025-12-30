@@ -69,11 +69,7 @@ export default function BrandsSection() {
                 className="card bg-base-100 border-2 border-base-200 hover:border-primary/30 shadow-sm hover:shadow-md transition-all duration-300 rounded-lg overflow-hidden cursor-pointer"
               >
                 <figure className="aspect-square bg-gradient-to-br from-primary/5 to-primary/10 p-4">
-                  <img
-                    src={brand.logo}
-                    alt={brand.name}
-                    className="w-full h-full object-contain"
-                  />
+                  <img src={brand.logo} alt={brand.name} className="w-full h-full object-contain" />
                 </figure>
                 <div className="card-body p-3 text-center">
                   <h3 className="text-sm font-semibold text-primary">{brand.name}</h3>
@@ -87,4 +83,3 @@ export default function BrandsSection() {
     </section>
   );
 }
-

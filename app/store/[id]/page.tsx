@@ -32,9 +32,9 @@ export default function StorePage() {
     const fetchStoreData = async () => {
       setIsLoading(true);
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
       setStore(mockStore);
-      
+
       // Mock items for this store
       setProducts([
         {
@@ -71,7 +71,9 @@ export default function StorePage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Store not found</h1>
-          <p className="text-base-content/70">The store you're looking for doesn't exist.</p>
+          <p className="text-base-content/70">
+            The store you&apos;re looking for doesn&apos;t exist.
+          </p>
         </div>
       </div>
     );

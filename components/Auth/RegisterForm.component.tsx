@@ -29,7 +29,7 @@ export default function RegisterForm({
 
   const handleChange = (field: keyof RegisterData, value: string) => {
     let sanitized = value;
-    
+
     if (field === 'email') {
       sanitized = sanitizeInput(value.toLowerCase());
     } else if (field === 'name' || field === 'phone') {
@@ -206,7 +206,11 @@ export default function RegisterForm({
             {passwordStrength.map((error, index) => (
               <div key={index} className="text-xs text-warning flex items-center gap-1">
                 <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  <path
+                    fillRule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                    clipRule="evenodd"
+                  />
                 </svg>
                 {error}
               </div>
@@ -263,4 +267,3 @@ export default function RegisterForm({
     </form>
   );
 }
-

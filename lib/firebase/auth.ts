@@ -24,7 +24,7 @@ export const firebaseAuth = {
   async register(data: RegisterData): Promise<User | null> {
     ensureClientSide();
     if (!auth || !db) throw new Error('Firebase not initialized');
-    
+
     try {
       // Create user in Firebase Auth
       const userCredential: UserCredential = await createUserWithEmailAndPassword(
@@ -55,16 +55,17 @@ export const firebaseAuth = {
       });
 
       return userData;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Firebase registration error:', error);
-      throw new Error(error.message || 'Registration failed');
+      const errorMessage = error instanceof Error ? error.message : 'Registration failed';
+      throw new Error(errorMessage);
     }
   },
 
   async login(credentials: LoginCredentials): Promise<User | null> {
     ensureClientSide();
     if (!auth || !db) throw new Error('Firebase not initialized');
-    
+
     try {
       const userCredential = await signInWithEmailAndPassword(
         auth,
@@ -100,21 +101,23 @@ export const firebaseAuth = {
         ...userData,
         id: firebaseUser.uid,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Firebase login error:', error);
-      throw new Error(error.message || 'Login failed');
+      const errorMessage = error instanceof Error ? error.message : 'Login failed';
+      throw new Error(errorMessage);
     }
   },
 
   async logout(): Promise<void> {
     ensureClientSide();
     if (!auth) throw new Error('Firebase not initialized');
-    
+
     try {
       await signOut(auth);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Firebase logout error:', error);
-      throw new Error(error.message || 'Logout failed');
+      const errorMessage = error instanceof Error ? error.message : 'Logout failed';
+      throw new Error(errorMessage);
     }
   },
 
@@ -125,9 +128,9 @@ export const firebaseAuth = {
 
   onAuthStateChanged(callback: (user: FirebaseUser | null) => void) {
     if (typeof window === 'undefined' || !auth) return () => {};
-    
+
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { onAuthStateChanged: firebaseOnAuthStateChanged } = require('firebase/auth');
     return firebaseOnAuthStateChanged(auth, callback);
   },
 };
-

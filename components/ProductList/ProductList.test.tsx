@@ -10,30 +10,29 @@ const mockProducts: Product[] = [
     price: 10,
     image: '/img1.jpg',
     category: 'Electronics',
+    type: 'product',
     stock: 5,
   },
 ];
 
 describe('ProductList', () => {
   it('renders products list with filters', () => {
-    render(<ProductList products={mockProducts} />);
-    
+    render(<ProductList items={mockProducts} />);
+
     expect(screen.getByText('Filters')).toBeInTheDocument();
     expect(screen.getByText('Product 1')).toBeInTheDocument();
   });
 
   it('renders empty state when no products', () => {
-    render(<ProductList products={[]} />);
-    
-    expect(screen.getByText('No products found')).toBeInTheDocument();
+    render(<ProductList items={[]} />);
+
+    expect(screen.getByText('No items found')).toBeInTheDocument();
   });
 
   it('renders filter panel', () => {
-    render(<ProductList products={mockProducts} />);
-    
+    render(<ProductList items={mockProducts} />);
+
     expect(screen.getByText('Filters')).toBeInTheDocument();
-    expect(screen.getByText('Reset')).toBeInTheDocument();
+    expect(screen.getByText('Clear All')).toBeInTheDocument();
   });
 });
-
-

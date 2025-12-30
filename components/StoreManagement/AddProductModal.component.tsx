@@ -12,17 +12,30 @@ interface AddProductModalProps {
 }
 
 const categoriesByType: Record<ItemType, string[]> = {
-  product: ['Electronics', 'Clothing', 'Books', 'Home & Kitchen', 'Accessories', 'Sports', 'Beauty', 'Toys'],
-  service: ['Home Services', 'Education', 'Beauty & Wellness', 'Automotive', 'Legal', 'Financial', 'Technology'],
+  product: [
+    'Electronics',
+    'Clothing',
+    'Books',
+    'Home & Kitchen',
+    'Accessories',
+    'Sports',
+    'Beauty',
+    'Toys',
+  ],
+  service: [
+    'Home Services',
+    'Education',
+    'Beauty & Wellness',
+    'Automotive',
+    'Legal',
+    'Financial',
+    'Technology',
+  ],
   pet: ['Dogs', 'Cats', 'Birds', 'Fish', 'Small Animals', 'Reptiles'],
   job: ['Technology', 'Design', 'Marketing', 'Sales', 'Healthcare', 'Education', 'Finance'],
 };
 
-export default function AddProductModal({
-  storeId,
-  onAdd,
-  onClose,
-}: AddProductModalProps) {
+export default function AddProductModal({ storeId, onAdd, onClose }: AddProductModalProps) {
   const [itemType, setItemType] = useState<ItemType>('product');
   const [formData, setFormData] = useState<any>({
     name: '',
@@ -49,13 +62,13 @@ export default function AddProductModal({
 
   const handleChange = (field: string, value: string | number) => {
     let sanitized: string | number = value;
-    
+
     if (typeof value === 'string' && (field === 'name' || field === 'description')) {
       sanitized = sanitizeInput(value);
     }
 
     setFormData((prev: any) => ({ ...prev, [field]: sanitized }));
-    
+
     // Clear error
     if (errors[field]) {
       setErrors((prev) => {
@@ -120,8 +133,14 @@ export default function AddProductModal({
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
-    if (!validate() || !formData.name || !formData.description || !formData.image || !formData.category) {
+
+    if (
+      !validate() ||
+      !formData.name ||
+      !formData.description ||
+      !formData.image ||
+      !formData.category
+    ) {
       return;
     }
 
@@ -191,7 +210,7 @@ export default function AddProductModal({
         } as Job;
         break;
     }
-    
+
     onAdd(newItem);
   };
 
@@ -199,7 +218,7 @@ export default function AddProductModal({
     <div className="modal modal-open">
       <div className="modal-box max-w-2xl max-h-[90vh] overflow-y-auto">
         <h3 className="font-bold text-lg text-primary mb-4">Add New Item</h3>
-        
+
         {/* Type Selector */}
         <div className="mb-4">
           <label className="label">
