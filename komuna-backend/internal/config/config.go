@@ -27,7 +27,7 @@ func Load() Config {
 
 	return Config{
 		AppEnv:      helpers.GetEnv("APP_ENV", "development"),
-		Port:        helpers.GetEnv("PORT", "5432"),
+		Port:        helpers.GetEnv("PORT", "2077"),
 		DatabaseURL: helpers.MustEnv("DATABASE_URL"),
 		JwtSecret:   helpers.MustEnv("JWT_SECRET"),
 	}

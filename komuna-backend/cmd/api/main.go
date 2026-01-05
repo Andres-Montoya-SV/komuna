@@ -12,11 +12,13 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"go.uber.org/zap"
 
+	"komuna/internal/auth"
 	"komuna/internal/config"
 	"komuna/internal/db"
 	"komuna/internal/errors"
 	"komuna/internal/logger"
 	"komuna/internal/ratelimit"
+	"komuna/internal/routes"
 )
 
 func main() {
@@ -54,6 +56,11 @@ func main() {
 	// =========================
 	app.Use(logger.RequestID())
 
+	authCfg := auth.Config{
+		Secret:       os.Getenv("JWT_SECRET"),
+		AccessExpiry: 15 * time.Minute,
+	}
+
 	// =========================
 	// Panic isolation (PER REQUEST)
 	// =========================
@@ -81,42 +88,7 @@ func main() {
 	// =========================
 	// Routes
 	// =========================
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Komuna API running")
-	})
-
-	app.Get("/health", func(c *fiber.Ctx) error {
-		return c.JSON(fiber.Map{
-			"status": "ok",
-			"time":   time.Now(),
-		})
-	})
-
-	app.Get("/ready", func(c *fiber.Ctx) error {
-		if err := dbPool.Ping(c.UserContext()); err != nil {
-			return c.Status(fiber.StatusServiceUnavailable).JSON(fiber.Map{
-				"status": "db_down",
-			})
-		}
-
-		return c.JSON(fiber.Map{
-			"status": "ready",
-		})
-	})
-
-	app.Get("/db-test", func(c *fiber.Ctx) error {
-		var now time.Time
-
-		err := dbPool.
-			QueryRow(c.UserContext(), "SELECT NOW()").
-			Scan(&now)
-
-		if err != nil {
-			return errors.Internal("database query failed")
-		}
-
-		return c.SendString("Database time: " + now.String())
-	})
+	routes.Register(app, dbPool, authCfg)
 
 	// =========================
 	// Graceful shutdown
