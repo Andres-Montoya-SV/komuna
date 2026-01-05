@@ -12,10 +12,10 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"go.uber.org/zap"
 
-	"komuna/internal/auth"
 	"komuna/internal/config"
 	"komuna/internal/db"
 	"komuna/internal/errors"
+	"komuna/internal/firebase"
 	"komuna/internal/logger"
 	"komuna/internal/ratelimit"
 	"komuna/internal/routes"
@@ -56,9 +56,21 @@ func main() {
 	// =========================
 	app.Use(logger.RequestID())
 
-	authCfg := auth.Config{
-		Secret:       os.Getenv("JWT_SECRET"),
-		AccessExpiry: 15 * time.Minute,
+	// =========================
+	// Firebase Authentication
+	// =========================
+	if _, err := firebase.Init(); err != nil {
+		logger.Log.Fatal("failed to initialize Firebase", zap.Error(err))
+	}
+	log.Println("Firebase initialized")
+
+	// Verificar salud de Firebase
+	ctx := context.Background()
+	if err := firebase.CheckHealth(ctx); err != nil {
+		logger.Log.Warn("Firebase health check failed", zap.Error(err))
+		logger.Log.Info("This may cause authentication to fail. Please check your Firebase configuration.")
+	} else {
+		log.Println("Firebase health check passed")
 	}
 
 	// =========================
@@ -88,7 +100,7 @@ func main() {
 	// =========================
 	// Routes
 	// =========================
-	routes.Register(app, dbPool, authCfg)
+	routes.Register(app, dbPool)
 
 	// =========================
 	// Graceful shutdown

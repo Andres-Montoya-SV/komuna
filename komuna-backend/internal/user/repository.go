@@ -2,27 +2,24 @@ package user
 
 import (
 	"context"
+	"fmt"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 // CreateUser inserta un nuevo usuario en la base de datos.
-// Asume la existencia de una tabla "users" con columnas compatibles.
+// Ahora usa Firebase UID como ID principal.
 func CreateUser(ctx context.Context, dbPool *pgxpool.Pool, u User) (User, error) {
 	now := time.Now().UTC()
 
-	// Generar ID si no viene seteado
+	// El ID debe venir del Firebase UID, no generamos UUID propio
 	if u.ID == "" {
-		u.ID = uuid.NewString()
+		return User{}, fmt.Errorf("user ID (Firebase UID) is required")
 	}
 
-	// Valor por defecto para status
-	if u.Status == "" {
-		u.Status = "pending" // pending | active | disabled, etc.
-	}
-
+	// Ya no guardamos password_hash, Firebase maneja eso
+	// Hacer cast explícito del status al enum user_status
 	const query = `
 		INSERT INTO users (
 			id,
@@ -31,14 +28,13 @@ func CreateUser(ctx context.Context, dbPool *pgxpool.Pool, u User) (User, error)
 			username,
 			phone,
 			email,
-			password_hash,
 			status,
 			email_verified,
 			created_at,
 			updated_at,
 			last_login_at
 		)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, false, $9, $10, NULL)
+		VALUES ($1, $2, $3, $4, $5, $6, $7::user_status, $8, $9, $10, NULL)
 		RETURNING
 			id,
 			first_name,
@@ -46,7 +42,6 @@ func CreateUser(ctx context.Context, dbPool *pgxpool.Pool, u User) (User, error)
 			username,
 			phone,
 			email,
-			password_hash,
 			status,
 			email_verified,
 			created_at,
@@ -63,8 +58,8 @@ func CreateUser(ctx context.Context, dbPool *pgxpool.Pool, u User) (User, error)
 		u.Username,
 		u.Phone,
 		u.Email,
-		u.PasswordHash,
 		u.Status,
+		u.EmailVerified,
 		now,
 		now,
 	)
@@ -78,7 +73,6 @@ func CreateUser(ctx context.Context, dbPool *pgxpool.Pool, u User) (User, error)
 		&created.Username,
 		&created.Phone,
 		&created.Email,
-		&created.PasswordHash,
 		&created.Status,
 		&created.EmailVerified,
 		&created.CreatedAt,
@@ -101,7 +95,6 @@ func GetUserByID(ctx context.Context, dbPool *pgxpool.Pool, id string) (User, er
 			username,
 			phone,
 			email,
-			password_hash,
 			status,
 			email_verified,
 			created_at,
@@ -121,7 +114,6 @@ func GetUserByID(ctx context.Context, dbPool *pgxpool.Pool, id string) (User, er
 		&u.Username,
 		&u.Phone,
 		&u.Email,
-		&u.PasswordHash,
 		&u.Status,
 		&u.EmailVerified,
 		&u.CreatedAt,
@@ -144,7 +136,6 @@ func GetUserByEmail(ctx context.Context, dbPool *pgxpool.Pool, email string) (Us
 			username,
 			phone,
 			email,
-			password_hash,
 			status,
 			email_verified,
 			created_at,
@@ -164,7 +155,6 @@ func GetUserByEmail(ctx context.Context, dbPool *pgxpool.Pool, email string) (Us
 		&u.Username,
 		&u.Phone,
 		&u.Email,
-		&u.PasswordHash,
 		&u.Status,
 		&u.EmailVerified,
 		&u.CreatedAt,
@@ -187,7 +177,6 @@ func GetUserByUsername(ctx context.Context, dbPool *pgxpool.Pool, username strin
 			username,
 			phone,
 			email,
-			password_hash,
 			status,
 			email_verified,
 			created_at,
@@ -207,7 +196,6 @@ func GetUserByUsername(ctx context.Context, dbPool *pgxpool.Pool, username strin
 		&u.Username,
 		&u.Phone,
 		&u.Email,
-		&u.PasswordHash,
 		&u.Status,
 		&u.EmailVerified,
 		&u.CreatedAt,
@@ -230,7 +218,6 @@ func ListUsers(ctx context.Context, dbPool *pgxpool.Pool) ([]User, error) {
 			username,
 			phone,
 			email,
-			password_hash,
 			status,
 			email_verified,
 			created_at,
@@ -258,7 +245,6 @@ func ListUsers(ctx context.Context, dbPool *pgxpool.Pool) ([]User, error) {
 			&u.Username,
 			&u.Phone,
 			&u.Email,
-			&u.PasswordHash,
 			&u.Status,
 			&u.EmailVerified,
 			&u.CreatedAt,
@@ -276,4 +262,3 @@ func ListUsers(ctx context.Context, dbPool *pgxpool.Pool) ([]User, error) {
 
 	return users, nil
 }
-

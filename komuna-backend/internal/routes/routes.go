@@ -6,12 +6,11 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"komuna/internal/auth"
 	"komuna/internal/errors"
 	"komuna/internal/user"
 )
 
-func Register(app *fiber.App, dbPool *pgxpool.Pool, authCfg auth.Config) {
+func Register(app *fiber.App, dbPool *pgxpool.Pool) {
 	// Rutas públicas básicas (no versionadas)
 	app.Get("/", rootHandler())
 	app.Get("/health", healthHandler())
@@ -23,7 +22,7 @@ func Register(app *fiber.App, dbPool *pgxpool.Pool, authCfg auth.Config) {
 	v1 := api.Group("/v1")
 
 	// User routes
-	user.RegisterRoutes(v1, dbPool, authCfg)
+	user.RegisterRoutes(v1, dbPool)
 }
 
 func rootHandler() fiber.Handler {

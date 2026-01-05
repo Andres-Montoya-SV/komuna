@@ -9,7 +9,6 @@ type User struct {
 	Username      string     `json:"username"`
 	Phone         string     `json:"phone"`
 	Email         string     `json:"email"`
-	PasswordHash  string     `json:"-"`
 	Status        string     `json:"status"`
 	EmailVerified bool       `json:"email_verified"`
 	CreatedAt     time.Time  `json:"created_at"`

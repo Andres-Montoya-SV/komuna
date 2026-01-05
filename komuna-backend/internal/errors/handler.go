@@ -14,7 +14,7 @@ type APIError struct {
 
 func Handler(c *fiber.Ctx, err error) error {
 	code := fiber.StatusInternalServerError
-	message := "Ha ocurrido un error inesperado"
+	message := "Unexpected error occurred"
 
 	if e, ok := err.(*fiber.Error); ok {
 		code = e.Code
@@ -28,7 +28,6 @@ func Handler(c *fiber.Ctx, err error) error {
 
 	reqID, _ := c.Locals("request_id").(string)
 
-	// Solo log ERRORs reales del sistema
 	if code >= 500 {
 		logger.Log.Error(
 			"request failed",

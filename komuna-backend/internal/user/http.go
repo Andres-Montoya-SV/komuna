@@ -2,18 +2,20 @@ package user
 
 import (
 	"errors" // stdlib
-	"komuna/internal/auth"
 	"net/mail"
 	"strings"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"golang.org/x/crypto/bcrypt"
 
 	appErrors "komuna/internal/errors"
+	"komuna/internal/firebase"
+	"komuna/internal/logger"
+	"go.uber.org/zap"
 )
 
 type registerRequest struct {
@@ -26,19 +28,18 @@ type registerRequest struct {
 }
 
 type loginRequest struct {
-	Identifier string `json:"identifier"` // Puede ser email o username
+	Identifier string `json:"identifier"`
 	Password   string `json:"password"`
 }
 
 func RegisterRoutes(
 	r fiber.Router,
 	dbPool *pgxpool.Pool,
-	authCfg auth.Config,
 ) {
 	users := r.Group("/users")
 
 	users.Post("/register", registerHandler(dbPool))
-	users.Post("/login", loginHandler(dbPool, authCfg))
+	users.Post("/login", loginHandler(dbPool))
 	users.Get("/", listUsersHandler(dbPool))
 	users.Get("/:identifier", getUserHandler(dbPool))
 }
@@ -77,31 +78,69 @@ func registerHandler(dbPool *pgxpool.Pool) fiber.Handler {
 			return appErrors.BadRequest("password must be at least 8 characters")
 		}
 
-		hash, err := bcrypt.GenerateFromPassword([]byte(body.Password), bcrypt.DefaultCost)
+		ctx := c.UserContext()
+
+		// 1. Crear usuario en Firebase Authentication
+		displayName := body.FirstName + " " + body.LastName
+		firebaseUser, err := firebase.CreateUser(ctx, body.Email, body.Password, displayName)
 		if err != nil {
-			return appErrors.Internal("failed to hash password")
+			// Log el error real para debugging
+			logger.Log.Error(
+				"firebase create user failed",
+				zap.String("email", body.Email),
+				zap.Error(err),
+			)
+
+			// Si el email ya existe en Firebase
+			errStr := err.Error()
+			if strings.Contains(errStr, "email already exists") ||
+				strings.Contains(errStr, "EMAIL_EXISTS") ||
+				strings.Contains(errStr, "already exists") {
+				return appErrors.Conflict("email already exists")
+			}
+
+			// Retornar el error con más contexto
+			return appErrors.Internal("failed to create user in Firebase: " + errStr)
 		}
 
+		// 2. Guardar datos adicionales en PostgreSQL usando Firebase UID como ID
 		userToCreate := User{
-			FirstName:    body.FirstName,
-			LastName:     body.LastName,
-			Username:     body.Username,
-			Phone:        body.Phone,
-			Email:        body.Email,
-			PasswordHash: string(hash),
-			Status:       "pending",
+			ID:            firebaseUser.UID,
+			FirstName:     body.FirstName,
+			LastName:       body.LastName,
+			Username:      body.Username,
+			Phone:         body.Phone,
+			Email:         body.Email,
+			Status:        "pending",
+			EmailVerified: firebaseUser.EmailVerified,
 		}
 
-		created, err := CreateUser(c.UserContext(), dbPool, userToCreate)
+		created, err := CreateUser(ctx, dbPool, userToCreate)
 		if err != nil {
+			// Log el error detallado para debugging
+			logger.Log.Error(
+				"postgres create user failed",
+				zap.String("firebase_uid", firebaseUser.UID),
+				zap.String("email", body.Email),
+				zap.String("username", body.Username),
+				zap.Error(err),
+			)
+
 			var pgErr *pgconn.PgError
 			if errors.As(err, &pgErr) {
 				if pgErr.Code == "23505" {
+					// Si falla la inserción en PostgreSQL, eliminar el usuario de Firebase
+					_ = firebase.DeleteUser(ctx, firebaseUser.UID)
 					return appErrors.Conflict("email or username already exists")
 				}
+				// Si es otro error de PostgreSQL, incluir el mensaje
+				_ = firebase.DeleteUser(ctx, firebaseUser.UID)
+				return appErrors.Internal("failed to create user in database: " + pgErr.Message)
 			}
 
-			return appErrors.Internal("failed to create user")
+			// Si falla la inserción en PostgreSQL, eliminar el usuario de Firebase
+			_ = firebase.DeleteUser(ctx, firebaseUser.UID)
+			return appErrors.Internal("failed to create user: " + err.Error())
 		}
 
 		response := fiber.Map{
@@ -121,7 +160,6 @@ func registerHandler(dbPool *pgxpool.Pool) fiber.Handler {
 	}
 }
 
-// listUsersHandler devuelve todos los usuarios no eliminados.
 func listUsersHandler(dbPool *pgxpool.Pool) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		users, err := ListUsers(c.UserContext(), dbPool)
@@ -193,7 +231,7 @@ func getUserHandler(dbPool *pgxpool.Pool) fiber.Handler {
 	}
 }
 
-func loginHandler(dbPool *pgxpool.Pool, authCfg auth.Config) fiber.Handler {
+func loginHandler(dbPool *pgxpool.Pool) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var body loginRequest
 
@@ -207,45 +245,62 @@ func loginHandler(dbPool *pgxpool.Pool, authCfg auth.Config) fiber.Handler {
 			return appErrors.BadRequest("identifier and password are required")
 		}
 
-		var (
-			u   User
-			err error
-		)
+		ctx := c.UserContext()
 
+		// Determinar si es email o username
+		var email string
 		if strings.Contains(body.Identifier, "@") {
-			u, err = GetUserByEmail(c.UserContext(), dbPool, body.Identifier)
+			email = body.Identifier
 		} else {
-			u, err = GetUserByUsername(c.UserContext(), dbPool, body.Identifier)
-		}
-
-		if err != nil {
-			if errors.Is(err, pgx.ErrNoRows) {
-				return appErrors.Unauthorized("invalid credentials")
+			// Si es username, obtener el email desde PostgreSQL
+			u, err := GetUserByUsername(ctx, dbPool, body.Identifier)
+			if err != nil {
+				if errors.Is(err, pgx.ErrNoRows) {
+					return appErrors.Unauthorized("invalid credentials")
+				}
+				return appErrors.Internal("failed to login")
 			}
-			return appErrors.Internal("failed to login")
+			email = u.Email
 		}
 
-		if err := bcrypt.CompareHashAndPassword(
-			[]byte(u.PasswordHash),
-			[]byte(body.Password),
-		); err != nil {
+		// Autenticar con Firebase usando REST API
+		signInResp, err := firebase.SignInWithEmailPassword(ctx, email, body.Password)
+		if err != nil {
+			// Log el error para debugging (pero no lo revelamos al usuario por seguridad)
+			logger.Log.Warn(
+				"firebase login failed",
+				zap.String("email", email),
+				zap.Error(err),
+			)
+			// Firebase retorna errores específicos, pero por seguridad no los revelamos
 			return appErrors.Unauthorized("invalid credentials")
 		}
 
-		token, err := auth.GenerateAccessToken(
-			authCfg,
-			u.ID,
-			u.Username,
-			u.EmailVerified,
-		)
+		// Obtener datos adicionales del usuario desde PostgreSQL usando Firebase UID
+		u, err := GetUserByID(ctx, dbPool, signInResp.LocalID)
 		if err != nil {
-			return appErrors.Internal("failed to generate token")
+			logger.Log.Error(
+				"failed to get user data after firebase auth",
+				zap.String("firebase_uid", signInResp.LocalID),
+				zap.String("email", email),
+				zap.Error(err),
+			)
+			if errors.Is(err, pgx.ErrNoRows) {
+				// Usuario existe en Firebase pero no en PostgreSQL (caso edge)
+				return appErrors.Internal("user data not found in database")
+			}
+			return appErrors.Internal("failed to get user data")
 		}
 
+		// Actualizar last_login_at
+		now := time.Now().UTC()
+		_, _ = dbPool.Exec(ctx, "UPDATE users SET last_login_at = $1 WHERE id = $2", now, u.ID)
+
 		return c.JSON(fiber.Map{
-			"access_token": token,
-			"token_type":   "Bearer",
-			"expires_in":   int(authCfg.AccessExpiry.Seconds()),
+			"id_token":      signInResp.IDToken,
+			"refresh_token":  signInResp.RefreshToken,
+			"token_type":     "Bearer",
+			"expires_in":     signInResp.ExpiresIn,
 			"user": fiber.Map{
 				"id":             u.ID,
 				"username":       u.Username,
