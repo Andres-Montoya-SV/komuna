@@ -1,0 +1,145 @@
+package main
+
+import (
+	"context"
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/recover"
+	"go.uber.org/zap"
+
+	"komuna/internal/config"
+	"komuna/internal/db"
+	"komuna/internal/errors"
+	"komuna/internal/logger"
+	"komuna/internal/ratelimit"
+)
+
+func main() {
+	// =========================
+	// Config
+	// =========================
+	cfg := config.Load()
+
+	// =========================
+	// Logger
+	// =========================
+	logger.Init(cfg.AppEnv)
+	defer logger.Sync()
+
+	// =========================
+	// Database
+	// =========================
+	dbPool := db.New(cfg.DatabaseURL)
+	defer dbPool.Close()
+
+	// =========================
+	// Rate limiter
+	// =========================
+	limiter := ratelimit.New(100, time.Minute)
+
+	// =========================
+	// Fiber app
+	// =========================
+	app := fiber.New(fiber.Config{
+		ErrorHandler: errors.Handler,
+	})
+
+	// =========================
+	// App level logger by ID
+	// =========================
+	app.Use(logger.RequestID())
+
+	// =========================
+	// Panic isolation (PER REQUEST)
+	// =========================
+	app.Use(recover.New(recover.Config{
+		EnableStackTrace: true,
+	}))
+
+	// =========================
+	// Global timeout via context (SAFE)
+	// =========================
+	app.Use(func(c *fiber.Ctx) error {
+		ctx, cancel := context.WithTimeout(c.UserContext(), 10*time.Second)
+		defer cancel()
+
+		c.SetUserContext(ctx)
+		return c.Next()
+	})
+
+	// =========================
+	// Middlewares
+	// =========================
+	app.Use(ratelimit.FiberMiddleware(limiter))
+	app.Use(logger.FiberMiddleware())
+
+	// =========================
+	// Routes
+	// =========================
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("Komuna API running")
+	})
+
+	app.Get("/health", func(c *fiber.Ctx) error {
+		return c.JSON(fiber.Map{
+			"status": "ok",
+			"time":   time.Now(),
+		})
+	})
+
+	app.Get("/ready", func(c *fiber.Ctx) error {
+		if err := dbPool.Ping(c.UserContext()); err != nil {
+			return c.Status(fiber.StatusServiceUnavailable).JSON(fiber.Map{
+				"status": "db_down",
+			})
+		}
+
+		return c.JSON(fiber.Map{
+			"status": "ready",
+		})
+	})
+
+	app.Get("/db-test", func(c *fiber.Ctx) error {
+		var now time.Time
+
+		err := dbPool.
+			QueryRow(c.UserContext(), "SELECT NOW()").
+			Scan(&now)
+
+		if err != nil {
+			return errors.Internal("database query failed")
+		}
+
+		return c.SendString("Database time: " + now.String())
+	})
+
+	// =========================
+	// Graceful shutdown
+	// =========================
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+
+	go func() {
+		log.Printf("Komuna API listening on :%s", cfg.Port)
+		if err := app.Listen(":" + cfg.Port); err != nil {
+			logger.Log.Fatal("server failed to start", zap.Error(err))
+		}
+	}()
+
+	<-ctx.Done()
+	log.Println("shutdown signal received")
+
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if err := app.ShutdownWithContext(shutdownCtx); err != nil {
+		log.Println("server shutdown error:", err)
+	}
+
+	log.Println("server stopped gracefully")
+}
