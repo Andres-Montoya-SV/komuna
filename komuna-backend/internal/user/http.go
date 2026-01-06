@@ -15,6 +15,7 @@ import (
 	appErrors "komuna/internal/errors"
 	"komuna/internal/firebase"
 	"komuna/internal/logger"
+
 	"go.uber.org/zap"
 )
 
@@ -107,7 +108,7 @@ func registerHandler(dbPool *pgxpool.Pool) fiber.Handler {
 		userToCreate := User{
 			ID:            firebaseUser.UID,
 			FirstName:     body.FirstName,
-			LastName:       body.LastName,
+			LastName:      body.LastName,
 			Username:      body.Username,
 			Phone:         body.Phone,
 			Email:         body.Email,
@@ -298,9 +299,9 @@ func loginHandler(dbPool *pgxpool.Pool) fiber.Handler {
 
 		return c.JSON(fiber.Map{
 			"id_token":      signInResp.IDToken,
-			"refresh_token":  signInResp.RefreshToken,
-			"token_type":     "Bearer",
-			"expires_in":     signInResp.ExpiresIn,
+			"refresh_token": signInResp.RefreshToken,
+			"token_type":    "Bearer",
+			"expires_in":    signInResp.ExpiresIn,
 			"user": fiber.Map{
 				"id":             u.ID,
 				"username":       u.Username,
