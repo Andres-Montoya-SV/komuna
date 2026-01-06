@@ -2,45 +2,52 @@ package firebase
 
 import (
 	"context"
-	"log"
+	"encoding/json"
+	"errors"
 	"os"
 
-	"firebase.google.com/go/v4"
+	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/auth"
 	"google.golang.org/api/option"
 )
 
 var (
+	App        *firebase.App
 	authClient *auth.Client
 )
 
-// Init inicializa el cliente de Firebase Admin SDK
-func Init() (*auth.Client, error) {
-	ctx := context.Background()
-
-	// Obtener la ruta al archivo de credenciales desde variable de entorno
-	credentialsPath := os.Getenv("FIREBASE_CREDENTIALS_PATH")
-	if credentialsPath == "" {
-		log.Fatal("FIREBASE_CREDENTIALS_PATH environment variable is required")
+// Init inicializa Firebase Admin SDK
+func Init() (*firebase.App, error) {
+	raw := os.Getenv("FIREBASE_SERVICE_ACCOUNT_JSON")
+	if raw == "" {
+		return nil, errors.New("FIREBASE_SERVICE_ACCOUNT_JSON not set")
 	}
 
-	opt := option.WithCredentialsFile(credentialsPath)
-	app, err := firebase.NewApp(ctx, nil, opt)
+	// Validar JSON
+	var creds map[string]interface{}
+	if err := json.Unmarshal([]byte(raw), &creds); err != nil {
+		return nil, err
+	}
+
+	opt := option.WithCredentialsJSON([]byte(raw))
+
+	app, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
 		return nil, err
 	}
 
-	client, err := app.Auth(ctx)
+	client, err := app.Auth(context.Background())
 	if err != nil {
 		return nil, err
 	}
 
+	App = app
 	authClient = client
-	return client, nil
+
+	return app, nil
 }
 
-// GetAuthClient retorna el cliente de autenticación de Firebase
+// GetAuthClient retorna el cliente de Firebase Auth
 func GetAuthClient() *auth.Client {
 	return authClient
 }
-
