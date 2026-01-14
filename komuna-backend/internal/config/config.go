@@ -10,10 +10,11 @@ import (
 )
 
 type Config struct {
-	AppEnv      string
-	Port        string
-	DatabaseURL string
-	JwtSecret   string
+	AppEnv            string
+	Port              string
+	DatabaseURL       string
+	JwtSecret         string
+	FirebaseWebApiKey string
 }
 
 func Load() Config {
@@ -26,9 +27,10 @@ func Load() Config {
 	log.Println("Loading configuration...")
 
 	return Config{
-		AppEnv:      helpers.GetEnv("APP_ENV", "development"),
-		Port:        helpers.GetEnv("PORT", "2077"),
-		DatabaseURL: helpers.MustEnv("DATABASE_URL"),
-		JwtSecret:   helpers.MustEnv("JWT_SECRET"),
+		AppEnv:            helpers.GetEnv("APP_ENV", "development"),
+		Port:              helpers.GetEnv("PORT", "2077"),
+		DatabaseURL:       helpers.MustEnv("DATABASE_URL"),
+		JwtSecret:         helpers.MustEnv("JWT_SECRET"),
+		FirebaseWebApiKey: helpers.GetEnv("FIREBASE_WEB_API_KEY", ""), // Optional if not using login
 	}
 }

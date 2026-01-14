@@ -19,6 +19,7 @@ import (
 	"komuna/internal/logger"
 	"komuna/internal/ratelimit"
 	"komuna/internal/routes"
+	"komuna/internal/user"
 )
 
 func main() {
@@ -100,7 +101,11 @@ func main() {
 	// =========================
 	// Routes
 	// =========================
-	routes.Register(app, dbPool)
+	// =========================
+	// Routes
+	// =========================
+	userRepo := user.NewRepository(dbPool)
+	routes.Register(app, dbPool, userRepo)
 
 	// =========================
 	// Graceful shutdown

@@ -10,7 +10,7 @@ import (
 	"komuna/internal/user"
 )
 
-func Register(app *fiber.App, dbPool *pgxpool.Pool) {
+func Register(app *fiber.App, dbPool *pgxpool.Pool, userRepo user.Repository) {
 	// Rutas públicas básicas (no versionadas)
 	app.Get("/", rootHandler())
 	app.Get("/health", healthHandler())
@@ -22,7 +22,7 @@ func Register(app *fiber.App, dbPool *pgxpool.Pool) {
 	v1 := api.Group("/v1")
 
 	// User routes
-	user.RegisterRoutes(v1, dbPool)
+	user.RegisterRoutes(v1, userRepo)
 }
 
 func rootHandler() fiber.Handler {
