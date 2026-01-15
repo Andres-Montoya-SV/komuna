@@ -6,20 +6,20 @@ A backend API service for the Komuna platform, built with Go and Firebase Authen
 
 ```
 komuna/
-├── komuna-backend/         # Go API server
-│   ├── cmd/api/           # Application entrypoint
-│   ├── internal/          # Private application code
-│   │   ├── auth/          # Authentication logic
-│   │   ├── config/        # Configuration management
-│   │   ├── db/            # Database connections
-│   │   ├── errors/        # Custom error handling
-│   │   ├── firebase/      # Firebase SDK integration
-│   │   ├── logger/        # Structured logging (Zap)
-│   │   ├── middleware/    # HTTP middlewares
-│   │   ├── ratelimit/     # Rate limiting
-│   │   ├── routes/        # API route definitions
-│   │   └── user/          # User domain logic
-│   └── .firebase/         # Firebase credentials
+├── cmd/api/           # Application entrypoint
+├── internal/          # Private application code
+│   ├── auth/          # Authentication logic
+│   ├── config/        # Configuration management
+│   ├── db/            # Database connections
+│   ├── errors/        # Custom error handling
+│   ├── firebase/      # Firebase SDK integration
+│   ├── logger/        # Structured logging (Zap)
+│   ├── middleware/    # HTTP middlewares
+│   ├── ratelimit/     # Rate limiting
+│   ├── routes/        # API route definitions
+│   └── user/          # User domain logic
+├── .firebase/         # Firebase credentials
+└── README.md          # Project documentation
 ```
 
 ## 🛠️ Tech Stack
@@ -44,7 +44,7 @@ komuna/
 1. **Clone the repository**
    ```bash
    git clone https://github.com/yourusername/komuna.git
-   cd komuna/komuna-backend
+   cd komuna
    ```
 
 2. **Install dependencies**
@@ -67,7 +67,7 @@ komuna/
 
 4. **Set up Firebase**
    
-   See [FIREBASE_SETUP.md](./komuna-backend/FIREBASE_SETUP.md) for detailed Firebase configuration instructions.
+   See [FIREBASE_SETUP.md](./FIREBASE_SETUP.md) for detailed Firebase configuration instructions.
 
 5. **Run the server**
    ```bash
