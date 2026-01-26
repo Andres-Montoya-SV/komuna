@@ -55,6 +55,18 @@ func RegisterRoutes(r fiber.Router, repo Repository) {
 	users.Get("/:identifier", getUserHandler(repo))
 }
 
+// registerHandler registers a new user
+// @Summary Register a new user
+// @Description Register a new user with email, password, and profile details
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param body body registerRequest true "User registration details"
+// @Success 201 {object} map[string]interface{}
+// @Failure 400 {object} appErrors.ErrorResponse
+// @Failure 409 {object} appErrors.ErrorResponse
+// @Failure 500 {object} appErrors.ErrorResponse
+// @Router /users/register [post]
 func registerHandler(repo Repository) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var body registerRequest
@@ -208,6 +220,14 @@ func registerHandler(repo Repository) fiber.Handler {
 	}
 }
 
+// listUsersHandler lists all users
+// @Summary List all users
+// @Description Get a list of all registered users
+// @Tags users
+// @Produce json
+// @Success 200 {array} map[string]interface{}
+// @Failure 500 {object} appErrors.ErrorResponse
+// @Router /users [get]
 func listUsersHandler(repo Repository) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		users, err := repo.ListUsers(c.UserContext())
@@ -235,6 +255,16 @@ func listUsersHandler(repo Repository) fiber.Handler {
 	}
 }
 
+// getUserHandler gets a user by identifier
+// @Summary Get user by identifier
+// @Description Get a user's public profile by ID, username, or email
+// @Tags users
+// @Produce json
+// @Param identifier path string true "User Identifier (ID, Username, or Email)"
+// @Success 200 {object} map[string]interface{}
+// @Failure 404 {object} appErrors.ErrorResponse
+// @Failure 500 {object} appErrors.ErrorResponse
+// @Router /users/{identifier} [get]
 func getUserHandler(repo Repository) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		identifier := strings.TrimSpace(c.Params("identifier"))
@@ -311,6 +341,19 @@ func syncUserWithFirebase(ctx context.Context, repo Repository, u User, firebase
 	return u, nil
 }
 
+// loginHandler authenticates a user
+// @Summary Login
+// @Description Authenticate a user with email/username and password
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param body body loginRequest true "Login credentials"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} appErrors.ErrorResponse
+// @Failure 401 {object} appErrors.ErrorResponse
+// @Failure 403 {object} appErrors.ErrorResponse
+// @Failure 500 {object} appErrors.ErrorResponse
+// @Router /users/login [post]
 func loginHandler(repo Repository) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		var body loginRequest
@@ -418,6 +461,17 @@ func loginHandler(repo Repository) fiber.Handler {
 	}
 }
 
+// getMeHandler gets the current authenticated user's profile
+// @Summary Get current user profile
+// @Description Get the profile of the currently authenticated user
+// @Tags users
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {object} map[string]interface{}
+// @Failure 401 {object} appErrors.ErrorResponse
+// @Failure 404 {object} appErrors.ErrorResponse
+// @Failure 500 {object} appErrors.ErrorResponse
+// @Router /users/me [get]
 func getMeHandler(repo Repository) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		uid, ok := c.Locals("uid").(string)

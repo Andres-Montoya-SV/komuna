@@ -1,0 +1,929 @@
+basePath: /api/v1
+definitions:
+  internal_comment.Comment:
+    properties:
+      author_id:
+        type: string
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      target_id:
+        type: string
+      target_type:
+        description: product, review, post
+        type: string
+      updated_at:
+        type: string
+    type: object
+  internal_comment.CreateCommentRequest:
+    properties:
+      content:
+        type: string
+      target_id:
+        type: string
+      target_type:
+        type: string
+    required:
+    - content
+    - target_id
+    - target_type
+    type: object
+  internal_community.Community:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      owner_id:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  internal_community.CreateCommunityRequest:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  internal_community.UpdateCommunityRequest:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    type: object
+  internal_product.CreateProductRequest:
+    properties:
+      community_id:
+        description: Optional
+        type: string
+      description:
+        type: string
+      name:
+        type: string
+      price:
+        minimum: 0
+        type: number
+      quality:
+        type: string
+      stock_quantity:
+        minimum: 0
+        type: integer
+      store_id:
+        description: Optional
+        type: string
+    required:
+    - name
+    - price
+    type: object
+  internal_product.Product:
+    properties:
+      community_id:
+        description: Nullable now
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      quality:
+        description: 'New: Condition (New, Used, etc)'
+        type: string
+      seller_id:
+        type: string
+      stock_quantity:
+        description: 'New: Stack on unit'
+        type: integer
+      store_id:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  internal_review.CreateReviewRequest:
+    properties:
+      comment:
+        type: string
+      rating:
+        maximum: 5
+        minimum: 1
+        type: integer
+      target_id:
+        type: string
+      target_type:
+        enum:
+        - product
+        - store
+        - user
+        type: string
+    required:
+    - rating
+    - target_id
+    - target_type
+    type: object
+  internal_review.Review:
+    properties:
+      author_id:
+        type: string
+      comment:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      rating:
+        type: integer
+      target_id:
+        type: string
+      target_type:
+        description: product, store, user
+        type: string
+      updated_at:
+        type: string
+    type: object
+  internal_store.CreateStoreRequest:
+    properties:
+      description:
+        type: string
+      email:
+        type: string
+      location:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      social_links:
+        $ref: '#/definitions/internal_store.SocialLinks'
+    required:
+    - email
+    - name
+    type: object
+  internal_store.SocialLinks:
+    additionalProperties:
+      type: string
+    type: object
+  internal_store.Store:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      location:
+        type: string
+      name:
+        type: string
+      owner_id:
+        type: string
+      phone:
+        type: string
+      social_links:
+        $ref: '#/definitions/internal_store.SocialLinks'
+      updated_at:
+        type: string
+    type: object
+  internal_store.UpdateStoreRequest:
+    properties:
+      description:
+        type: string
+      email:
+        type: string
+      location:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      social_links:
+        $ref: '#/definitions/internal_store.SocialLinks'
+    type: object
+  internal_user.loginRequest:
+    properties:
+      identifier:
+        type: string
+      password:
+        type: string
+    type: object
+  internal_user.registerRequest:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      username:
+        type: string
+    type: object
+  komuna_internal_errors.ErrorResponse:
+    properties:
+      error:
+        type: string
+      request_id:
+        type: string
+    type: object
+host: localhost:2077
+info:
+  contact: {}
+  description: Backend API for the Komuna platform
+  title: Komuna API
+  version: "1.0"
+paths:
+  /comments:
+    get:
+      description: List comments for a specific target
+      parameters:
+      - description: Target ID
+        in: query
+        name: target_id
+        required: true
+        type: string
+      - description: Target Type
+        in: query
+        name: target_type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/internal_comment.Comment'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+      summary: List comments
+      tags:
+      - comments
+    post:
+      consumes:
+      - application/json
+      description: Create a comment for a target (product, review, post)
+      parameters:
+      - description: Comment details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_comment.CreateCommentRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_comment.Comment'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new comment
+      tags:
+      - comments
+  /communities:
+    get:
+      description: Get a list of all communities
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/internal_community.Community'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+      summary: List all communities
+      tags:
+      - communities
+    post:
+      consumes:
+      - application/json
+      description: Create a new community with the authenticated user as owner
+      parameters:
+      - description: Community details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_community.CreateCommunityRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_community.Community'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new community
+      tags:
+      - communities
+  /communities/{id}:
+    get:
+      description: Get detailed information about a specific community
+      parameters:
+      - description: Community ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_community.Community'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+      summary: Get community by ID
+      tags:
+      - communities
+    put:
+      consumes:
+      - application/json
+      description: Update community details (only by owner)
+      parameters:
+      - description: Community ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated community details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_community.UpdateCommunityRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_community.Community'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update a community
+      tags:
+      - communities
+  /products:
+    get:
+      description: List products with optional filters (community_id, store_id, seller_id)
+      parameters:
+      - description: Community ID
+        in: query
+        name: community_id
+        type: string
+      - description: Store ID
+        in: query
+        name: store_id
+        type: string
+      - description: Seller ID
+        in: query
+        name: seller_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/internal_product.Product'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+      summary: List products
+      tags:
+      - products
+    post:
+      consumes:
+      - application/json
+      description: Create a new product. Can be linked to a store or just a user profile.
+      parameters:
+      - description: Product details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_product.CreateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_product.Product'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new product
+      tags:
+      - products
+  /products/{id}:
+    get:
+      description: Get detailed information about a specific product
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_product.Product'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+      summary: Get product by ID
+      tags:
+      - products
+    put:
+      consumes:
+      - application/json
+      description: Update product details (only by seller)
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated product details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_product.CreateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_product.Product'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update a product
+      tags:
+      - products
+  /reviews:
+    get:
+      description: List reviews for a specific target
+      parameters:
+      - description: Target ID
+        in: query
+        name: target_id
+        required: true
+        type: string
+      - description: Target Type (product, store, user)
+        in: query
+        name: target_type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/internal_review.Review'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+      summary: List reviews
+      tags:
+      - reviews
+    post:
+      consumes:
+      - application/json
+      description: Create a review for a target (product, store, user)
+      parameters:
+      - description: Review details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_review.CreateReviewRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_review.Review'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new review
+      tags:
+      - reviews
+  /store:
+    post:
+      consumes:
+      - application/json
+      description: Create a new store for the authenticated user
+      parameters:
+      - description: Store details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_store.CreateStoreRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_store.Store'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new store
+      tags:
+      - stores
+  /store/{id}:
+    get:
+      description: Get public information about a store
+      parameters:
+      - description: Store ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_store.Store'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+      summary: Get store by ID
+      tags:
+      - stores
+    put:
+      consumes:
+      - application/json
+      description: Update store details (only by owner)
+      parameters:
+      - description: Store ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated store details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_store.UpdateStoreRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_store.Store'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Update a store
+      tags:
+      - stores
+  /store/me:
+    get:
+      description: Get the store owned by the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_store.Store'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get my store
+      tags:
+      - stores
+  /users:
+    get:
+      description: Get a list of all registered users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+      summary: List all users
+      tags:
+      - users
+  /users/{identifier}:
+    get:
+      description: Get a user's public profile by ID, username, or email
+      parameters:
+      - description: User Identifier (ID, Username, or Email)
+        in: path
+        name: identifier
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+      summary: Get user by identifier
+      tags:
+      - users
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate a user with email/username and password
+      parameters:
+      - description: Login credentials
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_user.loginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+      summary: Login
+      tags:
+      - users
+  /users/me:
+    get:
+      description: Get the profile of the currently authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get current user profile
+      tags:
+      - users
+  /users/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user with email, password, and profile details
+      parameters:
+      - description: User registration details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_user.registerRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/komuna_internal_errors.ErrorResponse'
+      summary: Register a new user
+      tags:
+      - users
+securityDefinitions:
+  ApiKeyAuth:
+    description: Bearer token
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

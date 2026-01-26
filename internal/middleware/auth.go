@@ -45,7 +45,10 @@ func AuthRequired(c *fiber.Ctx) error {
 	// Also set in UserContext if needed, mostly for value passing
 	// But Fiber Locals is the standard way to pass request-scoped data.
 	// We can also wrap the request context.
-	ctx := context.WithValue(c.UserContext(), "uid", token.UID)
+	// Use a typed context key to avoid collisions
+	type ctxKey string
+	const uidKey ctxKey = "uid"
+	ctx := context.WithValue(c.UserContext(), uidKey, token.UID)
 	c.SetUserContext(ctx)
 
 	return c.Next()

@@ -3,14 +3,24 @@ package routes
 import (
 	"time"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2" // swagger handler
+	"github.com/gofiber/swagger"
 	"github.com/jackc/pgx/v5/pgxpool"
 
+	_ "komuna/docs" // load API Docs files (it will create this)
+	"komuna/internal/comment"
+	"komuna/internal/community"
 	"komuna/internal/errors"
+	"komuna/internal/product"
+	"komuna/internal/review"
+	"komuna/internal/store"
 	"komuna/internal/user"
 )
 
 func Register(app *fiber.App, dbPool *pgxpool.Pool, userRepo user.Repository) {
+	// Swagger
+	app.Get("/swagger/*", swagger.HandlerDefault)
+
 	// Rutas públicas básicas (no versionadas)
 	app.Get("/", rootHandler())
 	app.Get("/health", healthHandler())
@@ -23,6 +33,26 @@ func Register(app *fiber.App, dbPool *pgxpool.Pool, userRepo user.Repository) {
 
 	// User routes
 	user.RegisterRoutes(v1, userRepo)
+
+	// Community routes
+	communityRepo := community.NewRepository(dbPool)
+	community.RegisterRoutes(v1, communityRepo)
+
+	// Store routes
+	storeRepo := store.NewRepository(dbPool)
+	store.RegisterRoutes(v1, storeRepo)
+
+	// Product routes
+	productRepo := product.NewRepository(dbPool)
+	product.RegisterRoutes(v1, productRepo)
+
+	// Review routes
+	reviewRepo := review.NewRepository(dbPool)
+	review.RegisterRoutes(v1, reviewRepo)
+
+	// Comment routes
+	commentRepo := comment.NewRepository(dbPool)
+	comment.RegisterRoutes(v1, commentRepo)
 }
 
 func rootHandler() fiber.Handler {

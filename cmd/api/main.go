@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/helmet"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"go.uber.org/zap"
 
@@ -22,6 +24,15 @@ import (
 	"komuna/internal/user"
 )
 
+// @title Komuna API
+// @version 1.0
+// @description Backend API for the Komuna platform
+// @host localhost:2077
+// @BasePath /api/v1
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
+// @description Bearer token
 func main() {
 	// =========================
 	// Config
@@ -95,6 +106,12 @@ func main() {
 	// =========================
 	// Middlewares
 	// =========================
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "*", // TODO: Restrict in production via ENV
+		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
+		AllowMethods: "GET, POST, PUT, DELETE, OPTIONS",
+	}))
+	app.Use(helmet.New())
 	app.Use(ratelimit.FiberMiddleware(limiter))
 	app.Use(logger.FiberMiddleware())
 

@@ -12,6 +12,11 @@ type APIError struct {
 	Message string `json:"message"`
 }
 
+type ErrorResponse struct {
+	Error     string `json:"error"`
+	RequestID string `json:"request_id"`
+}
+
 func Handler(c *fiber.Ctx, err error) error {
 	code := fiber.StatusInternalServerError
 	message := "Unexpected error occurred"
