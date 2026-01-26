@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"komuna/internal/errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"komuna/internal/errors"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
@@ -41,89 +42,72 @@ func (m *MockRepository) Update(ctx context.Context, p Product) error {
 }
 
 func TestCreateProduct(t *testing.T) {
-	// Setup Fiber
-	app := fiber.New(fiber.Config{
-		ErrorHandler: errors.Handler,
-	})
+	app := fiber.New(fiber.Config{ErrorHandler: errors.Handler})
 	mockRepo := new(MockRepository)
 	h := &handler{repo: mockRepo}
 
-	// Inject handler with a middleware to simulate auth
+	// Simulate auth middleware
 	app.Post("/products", func(c *fiber.Ctx) error {
 		c.Locals("uid", "user123")
 		return c.Next()
 	}, h.createHandler)
 
-	t.Run("Success", func(t *testing.T) {
-		reqBody := CreateProductRequest{
-			Name:          "Test Product",
-			Description:   "A test product",
-			Price:         99.99,
-			Quality:       "New",
-			StockQuantity: 10,
-		}
-		bodyBytes, _ := json.Marshal(reqBody)
+	reqBody := CreateProductRequest{
+		Name:          "Test Product",
+		Description:   "A test product",
+		Price:         99.99,
+		Quality:       "New",
+		StockQuantity: 10,
+	}
+	bodyBytes, _ := json.Marshal(reqBody)
 
-		expectedProduct := Product{
-			ID:            "prod123",
-			Name:          reqBody.Name,
-			Description:   reqBody.Description,
-			Price:         reqBody.Price,
-			Quality:       reqBody.Quality,
-			StockQuantity: reqBody.StockQuantity,
-			SellerID:      "user123",
-			CreatedAt:     time.Now(),
-			UpdatedAt:     time.Now(),
-		}
+	expectedProduct := Product{
+		ID:            "prod123",
+		Name:          reqBody.Name,
+		Description:   reqBody.Description,
+		Price:         reqBody.Price,
+		Quality:       reqBody.Quality,
+		StockQuantity: reqBody.StockQuantity,
+		SellerID:      "user123",
+		CreatedAt:     time.Now(),
+		UpdatedAt:     time.Now(),
+	}
 
-		// Mock expectations
-		// We use mock.MatchedBy to flexibly match the input struct since ID/Times are zero values in input
-		mockRepo.On("Create", mock.Anything, mock.MatchedBy(func(p Product) bool {
-			return p.Name == reqBody.Name && p.SellerID == "user123"
-		})).Return(expectedProduct, nil)
+	mockRepo.On("Create", mock.Anything, mock.MatchedBy(func(p Product) bool {
+		return p.Name == reqBody.Name && p.SellerID == "user123"
+	})).Return(expectedProduct, nil)
 
-		req := httptest.NewRequest("POST", "/products", bytes.NewReader(bodyBytes))
-		req.Header.Set("Content-Type", "application/json")
-		resp, err := app.Test(req)
+	req := httptest.NewRequest("POST", "/products", bytes.NewReader(bodyBytes))
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, http.StatusCreated, resp.StatusCode)
 
-		assert.NoError(t, err)
-		assert.Equal(t, http.StatusCreated, resp.StatusCode)
-
-		var respBody Product
-		json.NewDecoder(resp.Body).Decode(&respBody)
-		assert.Equal(t, expectedProduct.ID, respBody.ID)
-	})
+	var respBody Product
+	err = json.NewDecoder(resp.Body).Decode(&respBody)
+	assert.NoError(t, err)
+	assert.Equal(t, expectedProduct.ID, respBody.ID)
 }
 
 func TestGetProduct(t *testing.T) {
-	app := fiber.New(fiber.Config{
-		ErrorHandler: errors.Handler,
-	})
+	app := fiber.New(fiber.Config{ErrorHandler: errors.Handler})
 	mockRepo := new(MockRepository)
 	h := &handler{repo: mockRepo}
-
 	app.Get("/products/:id", h.getHandler)
 
 	t.Run("Success", func(t *testing.T) {
-		expectedProduct := Product{
-			ID:   "prod123",
-			Name: "Existing Product",
-		}
+		expectedProduct := Product{ID: "prod123", Name: "Existing Product"}
 		mockRepo.On("GetByID", mock.Anything, "prod123").Return(expectedProduct, nil)
-
 		req := httptest.NewRequest("GET", "/products/prod123", nil)
 		resp, err := app.Test(req)
-
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
 	})
 
 	t.Run("Not Found", func(t *testing.T) {
 		mockRepo.On("GetByID", mock.Anything, "unknown").Return(Product{}, assert.AnError)
-
 		req := httptest.NewRequest("GET", "/products/unknown", nil)
 		resp, _ := app.Test(req)
-
 		assert.Equal(t, http.StatusNotFound, resp.StatusCode)
 	})
 }

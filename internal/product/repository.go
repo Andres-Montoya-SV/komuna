@@ -66,22 +66,18 @@ func (r *postgresRepository) List(ctx context.Context, filters map[string]interf
 		WHERE 1=1
 	`
 	var args []interface{}
-	argCount := 1
-
+	// argCount removed; args slice length used directly
 	if val, ok := filters["community_id"]; ok && val != "" {
-		query += fmt.Sprintf(" AND community_id = $%d", argCount)
+		query += fmt.Sprintf(" AND community_id = $%d", len(args)+1)
 		args = append(args, val)
-		argCount++
 	}
 	if val, ok := filters["store_id"]; ok && val != "" {
-		query += fmt.Sprintf(" AND store_id = $%d", argCount)
+		query += fmt.Sprintf(" AND store_id = $%d", len(args)+1)
 		args = append(args, val)
-		argCount++
 	}
 	if val, ok := filters["seller_id"]; ok && val != "" {
-		query += fmt.Sprintf(" AND seller_id = $%d", argCount)
+		query += fmt.Sprintf(" AND seller_id = $%d", len(args)+1)
 		args = append(args, val)
-		argCount++
 	}
 
 	query += " ORDER BY created_at DESC"
