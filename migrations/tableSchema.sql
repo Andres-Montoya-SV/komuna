@@ -21,22 +21,9 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
---
--- TOC entry 2 (class 3079 OID 16389)
--- Name: pgcrypto; Type: EXTENSION; Schema: -; Owner: -
---
-
-DROP EXTENSION IF EXISTS pgcrypto CASCADE;
-CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
+-- Extension management removed for Heroku compatibility
 
 
---
--- TOC entry 3497 (class 0 OID 0)
--- Dependencies: 2
--- Name: EXTENSION pgcrypto; Type: COMMENT; Schema: -; Owner: 
---
-
-COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
 
 
 --
