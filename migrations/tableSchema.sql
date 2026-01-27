@@ -348,6 +348,32 @@ CREATE INDEX IF NOT EXISTS idx_products_seller_id ON public.products(seller_id);
 CREATE TRIGGER trg_communities_updated_at BEFORE UPDATE ON public.communities FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 CREATE TRIGGER trg_products_updated_at BEFORE UPDATE ON public.products FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
+--
+-- Posts table
+--
+CREATE TABLE IF NOT EXISTS public.posts (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    title VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+    author_id VARCHAR(255) NOT NULL,
+    community_id UUID REFERENCES public.communities(id) ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+    is_deleted BOOLEAN DEFAULT FALSE NOT NULL,
+    deleted_at TIMESTAMP WITH TIME ZONE
+);
+
+-- Indexes for posts
+CREATE INDEX IF NOT EXISTS idx_posts_author_id ON public.posts(author_id);
+CREATE INDEX IF NOT EXISTS idx_posts_community_id ON public.posts(community_id);
+CREATE INDEX IF NOT EXISTS idx_posts_created_at ON public.posts(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_posts_not_deleted ON public.posts(is_deleted) WHERE is_deleted = FALSE;
+
+-- Trigger for posts updated_at
+CREATE TRIGGER trg_posts_updated_at 
+    BEFORE UPDATE ON public.posts 
+    FOR EACH ROW 
+    EXECUTE FUNCTION public.set_updated_at();
 
 --
 -- TOC entry 3343 (class 2606 OID 16547)

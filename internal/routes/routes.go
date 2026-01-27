@@ -11,6 +11,7 @@ import (
 	"komuna/internal/comment"
 	"komuna/internal/community"
 	"komuna/internal/errors"
+	"komuna/internal/post"
 	"komuna/internal/product"
 	"komuna/internal/review"
 	"komuna/internal/store"
@@ -53,6 +54,10 @@ func Register(app *fiber.App, dbPool *pgxpool.Pool, userRepo user.Repository) {
 	// Comment routes
 	commentRepo := comment.NewRepository(dbPool)
 	comment.RegisterRoutes(v1, commentRepo)
+
+	// Post routes
+	postRepo := post.NewRepository(dbPool)
+	post.RegisterRoutes(v1, postRepo)
 }
 
 func rootHandler() fiber.Handler {
