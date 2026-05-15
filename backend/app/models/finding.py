@@ -12,7 +12,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
 
 
-class FindingSeverity(str, enum.Enum):
+class FindingSeverity(enum.StrEnum):
     info = "info"
     low = "low"
     medium = "medium"
@@ -20,7 +20,7 @@ class FindingSeverity(str, enum.Enum):
     critical = "critical"
 
 
-class FindingStatus(str, enum.Enum):
+class FindingStatus(enum.StrEnum):
     open = "open"
     accepted_risk = "accepted_risk"
     resolved = "resolved"

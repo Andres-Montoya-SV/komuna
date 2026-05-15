@@ -6,7 +6,7 @@ No authentication bypass, uploads, deletes, or credential guessing.
 from __future__ import annotations
 
 import logging
-from enum import Enum
+from enum import StrEnum
 from typing import NamedTuple
 
 import httpx
@@ -16,7 +16,7 @@ from app.core.config import Settings, get_settings
 logger = logging.getLogger(__name__)
 
 
-class BucketProvider(str, Enum):
+class BucketProvider(StrEnum):
     s3 = "s3"
     gcs = "gcs"
     azure_blob = "azure_blob"

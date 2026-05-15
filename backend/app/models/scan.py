@@ -12,7 +12,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
 
 
-class ScanType(str, enum.Enum):
+class ScanType(enum.StrEnum):
     subdomain = "subdomain"
     tls = "tls"
     dns = "dns"
@@ -20,7 +20,7 @@ class ScanType(str, enum.Enum):
     full = "full"
 
 
-class ScanStatus(str, enum.Enum):
+class ScanStatus(enum.StrEnum):
     queued = "queued"
     running = "running"
     completed = "completed"

@@ -24,7 +24,7 @@ def slugify_name(name: str) -> str:
     return s or "org"
 
 
-class OrganizationRole(str, enum.Enum):
+class OrganizationRole(enum.StrEnum):
     owner = "owner"
     admin = "admin"
     member = "member"

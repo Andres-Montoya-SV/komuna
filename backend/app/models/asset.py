@@ -12,7 +12,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
 
 
-class AssetType(str, enum.Enum):
+class AssetType(enum.StrEnum):
     domain = "domain"
     subdomain = "subdomain"
     bucket = "bucket"
