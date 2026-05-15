@@ -28,8 +28,11 @@ docker compose up -d
 ```bash
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
+pip install -r requirements-dev.txt
 cp .env.example .env
 ```
+
+Runtime installs only need `requirements.txt`. Add `requirements-dev.txt` for tests, formatting, and linting (Black, Ruff, pytest).
 
 3. **Run migrations**:
 
@@ -47,10 +50,24 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 `Authorization: Bearer <Firebase ID token>`
 
-5. **Tests**:
+5. **Tests** (requires dev dependencies):
 
 ```bash
 pytest
+```
+
+6. **Lint / format** (optional):
+
+```bash
+ruff check .
+black --check .
+```
+
+From the repository root (the parent of the `backend` folder), install [pre-commit](https://pre-commit.com/) hooks (see `.pre-commit-config.yaml`):
+
+```bash
+pip install pre-commit
+pre-commit install
 ```
 
 ### Firebase bootstrap

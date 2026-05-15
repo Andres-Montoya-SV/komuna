@@ -3,7 +3,6 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock
 
 import pytest
-
 from fastapi import HTTPException
 
 from app.services.authorization import require_membership

@@ -26,12 +26,18 @@ class Settings(BaseSettings):
         alias="FIREBASE_CREDENTIALS_PATH",
     )
     # Optional comma-separated Firebase project IDs to accept (empty = any project in creds).
-    firebase_allowed_audiences: str = Field(default="", alias="FIREBASE_ALLOWED_AUDIENCES")
+    firebase_allowed_audiences: str = Field(
+        default="", alias="FIREBASE_ALLOWED_AUDIENCES"
+    )
 
     # Scheduler
-    scan_poll_interval_seconds: int = Field(default=30, alias="SCAN_POLL_INTERVAL_SECONDS")
+    scan_poll_interval_seconds: int = Field(
+        default=30, alias="SCAN_POLL_INTERVAL_SECONDS"
+    )
     scheduled_scan_enabled: bool = Field(default=True, alias="SCHEDULED_SCAN_ENABLED")
-    scheduled_scan_interval_hours: int = Field(default=24, alias="SCHEDULED_SCAN_INTERVAL_HOURS")
+    scheduled_scan_interval_hours: int = Field(
+        default=24, alias="SCHEDULED_SCAN_INTERVAL_HOURS"
+    )
 
     # Defensive limits
     crt_sh_timeout_seconds: float = Field(default=30.0, alias="CRT_SH_TIMEOUT_SECONDS")
@@ -40,7 +46,9 @@ class Settings(BaseSettings):
 
     @property
     def firebase_audience_list(self) -> list[str]:
-        return [x.strip() for x in self.firebase_allowed_audiences.split(",") if x.strip()]
+        return [
+            x.strip() for x in self.firebase_allowed_audiences.split(",") if x.strip()
+        ]
 
 
 @lru_cache

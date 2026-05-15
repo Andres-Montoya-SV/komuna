@@ -47,7 +47,9 @@ class Finding(Base):
         nullable=True,
         index=True,
     )
-    severity: Mapped[FindingSeverity] = mapped_column(String(16), nullable=False, index=True)
+    severity: Mapped[FindingSeverity] = mapped_column(
+        String(16), nullable=False, index=True
+    )
     status: Mapped[FindingStatus] = mapped_column(
         String(32),
         nullable=False,
@@ -59,7 +61,9 @@ class Finding(Base):
     impact: Mapped[str] = mapped_column(Text, nullable=False)
     recommendation: Mapped[str] = mapped_column(Text, nullable=False)
     evidence: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False)
-    detected_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    detected_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False
+    )
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),

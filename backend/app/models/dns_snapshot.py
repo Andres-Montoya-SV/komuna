@@ -27,7 +27,9 @@ class DnsSnapshot(Base):
     )
     record_type: Mapped[str] = mapped_column(String(16), nullable=False, index=True)
     records: Mapped[list[Any]] = mapped_column(JSON, nullable=False)
-    fingerprint_hash: Mapped[str] = mapped_column(String(128), nullable=False, index=True)
+    fingerprint_hash: Mapped[str] = mapped_column(
+        String(128), nullable=False, index=True
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),

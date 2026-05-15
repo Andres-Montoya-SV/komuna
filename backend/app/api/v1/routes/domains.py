@@ -13,10 +13,18 @@ from app.db.session import get_session
 from app.models.domain import Domain, new_verification_token
 from app.models.scan import Scan, ScanStatus, ScanType
 from app.models.user import User
-from app.schemas.domain import DomainCreate, DomainOut, DomainScanResponse, DomainVerifyResponse
+from app.schemas.domain import (
+    DomainCreate,
+    DomainOut,
+    DomainScanResponse,
+    DomainVerifyResponse,
+)
 from app.services.authorization import require_membership
-from app.services.domain_validation import assert_domain_allowed_for_operations, normalize_domain
-from app.services.domain_validation import verify_challenge_txt_presence
+from app.services.domain_validation import (
+    assert_domain_allowed_for_operations,
+    normalize_domain,
+    verify_challenge_txt_presence,
+)
 
 router = APIRouter(prefix="/domains", tags=["domains"])
 
@@ -30,12 +38,16 @@ def register_domain(
     try:
         norm = normalize_domain(payload.name)
     except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)) from e
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
+        ) from e
 
     try:
         assert_domain_allowed_for_operations(norm)
     except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)) from e
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
+        ) from e
 
     _ = require_membership(db, user_id=user.id, organization_id=payload.organization_id)
 
@@ -72,7 +84,9 @@ def verify_domain(
 ) -> DomainVerifyResponse:
     domain = db.get(Domain, domain_id)
     if domain is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Domain not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Domain not found"
+        )
     _ = require_membership(db, user_id=user.id, organization_id=domain.organization_id)
 
     settings = get_settings()
@@ -97,7 +111,11 @@ def verify_domain(
     return DomainVerifyResponse(verified=True, message="Domain verified")
 
 
-@router.post("/{domain_id}/scan", response_model=DomainScanResponse, status_code=status.HTTP_202_ACCEPTED)
+@router.post(
+    "/{domain_id}/scan",
+    response_model=DomainScanResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+)
 def enqueue_domain_scan(
     domain_id: uuid.UUID,
     db: Annotated[Session, Depends(get_session)],
@@ -106,7 +124,9 @@ def enqueue_domain_scan(
 ) -> DomainScanResponse:
     domain = db.get(Domain, domain_id)
     if domain is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Domain not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Domain not found"
+        )
     _ = require_membership(db, user_id=user.id, organization_id=domain.organization_id)
 
     if not domain.verified:

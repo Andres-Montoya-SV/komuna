@@ -24,7 +24,9 @@ def new_verification_token() -> str:
 
 class Domain(Base):
     __tablename__ = "domains"
-    __table_args__ = (UniqueConstraint("organization_id", "name", name="uq_org_domain_name"),)
+    __table_args__ = (
+        UniqueConstraint("organization_id", "name", name="uq_org_domain_name"),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
@@ -52,7 +54,9 @@ class Domain(Base):
         nullable=False,
     )
 
-    organization: Mapped["Organization"] = relationship("Organization", back_populates="domains")
+    organization: Mapped["Organization"] = relationship(
+        "Organization", back_populates="domains"
+    )
     assets: Mapped[list["Asset"]] = relationship("Asset", back_populates="domain")
     scans: Mapped[list["Scan"]] = relationship("Scan", back_populates="domain")
     dns_snapshots: Mapped[list["DnsSnapshot"]] = relationship(

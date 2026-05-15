@@ -37,7 +37,9 @@ def process_queued_scan_job() -> None:
             if processed:
                 logger.info("scheduler_processed_scans", extra={"count": processed})
     except Exception as e:
-        logger.warning("scheduler_scan_processing_failed", extra={"error_type": type(e).__name__})
+        logger.warning(
+            "scheduler_scan_processing_failed", extra={"error_type": type(e).__name__}
+        )
 
 
 def enqueue_scheduled_full_scans_job() -> None:
@@ -52,7 +54,11 @@ def enqueue_scheduled_full_scans_job() -> None:
 
     try:
         with _session_cm() as db:
-            domains = db.execute(select(Domain).where(Domain.verified.is_(True)).limit(50)).scalars().all()
+            domains = (
+                db.execute(select(Domain).where(Domain.verified.is_(True)).limit(50))
+                .scalars()
+                .all()
+            )
             enqueued = 0
             for domain in domains:
                 active_exists = db.execute(
@@ -80,7 +86,9 @@ def enqueue_scheduled_full_scans_job() -> None:
                     extra={"enqueued": enqueued},
                 )
     except Exception as e:
-        logger.warning("scheduler_enqueue_failed", extra={"error_type": type(e).__name__})
+        logger.warning(
+            "scheduler_enqueue_failed", extra={"error_type": type(e).__name__}
+        )
 
 
 def create_scheduler() -> BackgroundScheduler:

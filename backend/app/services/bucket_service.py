@@ -52,7 +52,9 @@ def probe_s3_virtual_hosted(bucket: str, client: httpx.Client) -> BucketProbeRes
             snippet = resp.text
         except Exception:
             snippet = ""
-        listing = resp.status_code == 200 and _snippet_has_public_list_indicators(snippet)
+        listing = resp.status_code == 200 and _snippet_has_public_list_indicators(
+            snippet
+        )
         note = "s3_virtual_hosted_get"
         return BucketProbeResult(
             provider=BucketProvider.s3,
@@ -82,7 +84,9 @@ def probe_gcs_bucket(bucket: str, client: httpx.Client) -> BucketProbeResult:
             snippet = resp.text
         except Exception:
             snippet = ""
-        listing = resp.status_code == 200 and _snippet_has_public_list_indicators(snippet)
+        listing = resp.status_code == 200 and _snippet_has_public_list_indicators(
+            snippet
+        )
         return BucketProbeResult(
             provider=BucketProvider.gcs,
             bucket_name=bucket,
@@ -135,7 +139,9 @@ def probe_candidates(
     headers = {
         "User-Agent": "ExposureMonitor/1.0 (defensive inventory; +https://example.invalid)",
     }
-    with httpx.Client(timeout=timeout, follow_redirects=False, headers=headers) as client:
+    with httpx.Client(
+        timeout=timeout, follow_redirects=False, headers=headers
+    ) as client:
         for name in candidates:
             results.append(probe_s3_virtual_hosted(name, client))
             results.append(probe_gcs_bucket(name, client))

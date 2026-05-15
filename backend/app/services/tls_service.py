@@ -6,7 +6,7 @@ import logging
 import socket
 import ssl
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from cryptography import x509
 from cryptography.hazmat.primitives.serialization import Encoding
@@ -28,15 +28,15 @@ class TlsCertificateInfo:
     pem_certificate: bytes
 
     def days_until_expiry(self, *, now: datetime | None = None) -> float:
-        n = now if now is not None else datetime.now(timezone.utc)
+        n = now if now is not None else datetime.now(UTC)
         if n.tzinfo is None:
-            n = n.replace(tzinfo=timezone.utc)
+            n = n.replace(tzinfo=UTC)
         return (self.not_after - n).total_seconds() / 86400.0
 
     def is_expired(self, *, now: datetime | None = None) -> bool:
-        n = now if now is not None else datetime.now(timezone.utc)
+        n = now if now is not None else datetime.now(UTC)
         if n.tzinfo is None:
-            n = n.replace(tzinfo=timezone.utc)
+            n = n.replace(tzinfo=UTC)
         return self.not_after < n
 
     def detected_self_signed(self) -> bool:
@@ -52,8 +52,8 @@ def _cert_validity_utc(cert_crypto: x509.Certificate) -> tuple[datetime, datetim
         na = cert_crypto.not_valid_after_utc
         return nb, na
     except AttributeError:
-        nb = cert_crypto.not_valid_before.replace(tzinfo=timezone.utc)
-        na = cert_crypto.not_valid_after.replace(tzinfo=timezone.utc)
+        nb = cert_crypto.not_valid_before.replace(tzinfo=UTC)
+        na = cert_crypto.not_valid_after.replace(tzinfo=UTC)
         return nb, na
 
 
@@ -73,7 +73,9 @@ def fetch_certificate(
     ctx.verify_mode = ssl.CERT_REQUIRED
 
     try:
-        return _read_tls_certificate(hostname, port, sock_timeout=sock_timeout, ssl_context=ctx)
+        return _read_tls_certificate(
+            hostname, port, sock_timeout=sock_timeout, ssl_context=ctx
+        )
     except (ssl.SSLError, ssl.CertificateError, OSError) as e:
         logger.info(
             "tls_fallback_insecure_cert_read",
@@ -86,7 +88,9 @@ def fetch_certificate(
     insecure.verify_mode = ssl.CERT_NONE
 
     try:
-        return _read_tls_certificate(hostname, port, sock_timeout=sock_timeout, ssl_context=insecure)
+        return _read_tls_certificate(
+            hostname, port, sock_timeout=sock_timeout, ssl_context=insecure
+        )
     except (ssl.SSLError, OSError) as e:
         logger.warning(
             "tls_failed_fully",

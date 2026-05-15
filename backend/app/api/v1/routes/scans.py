@@ -40,6 +40,8 @@ def get_scan(
 ) -> Scan:
     scan = db.get(Scan, scan_id)
     if scan is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Scan not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Scan not found"
+        )
     _ = require_membership(db, user_id=user.id, organization_id=scan.organization_id)
     return scan

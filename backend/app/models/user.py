@@ -22,7 +22,9 @@ class User(Base):
         primary_key=True,
         default=uuid.uuid4,
     )
-    firebase_uid: Mapped[str] = mapped_column(String(128), unique=True, index=True, nullable=False)
+    firebase_uid: Mapped[str] = mapped_column(
+        String(128), unique=True, index=True, nullable=False
+    )
     email: Mapped[str] = mapped_column(String(320), nullable=False, index=True)
     name: Mapped[str | None] = mapped_column(String(256), nullable=True)
     created_at: Mapped[datetime] = mapped_column(

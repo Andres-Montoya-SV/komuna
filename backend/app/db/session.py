@@ -36,8 +36,6 @@ def _session_factory_for_url(url: str) -> sessionmaker[Session]:
 
 
 def SessionLocal(url: str | None = None) -> sessionmaker[Session]:
-    from app.core.config import get_settings
-
     if url is None:
         return sessionmaker(autocommit=False, autoflush=False, bind=get_engine())
     return _session_factory_for_url(url)

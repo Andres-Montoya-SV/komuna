@@ -50,7 +50,11 @@ def collect_rrset(hostname: str, rtype: str, *, timeout: float) -> list[str]:
     except Exception as e:
         logger.info(
             "dns_rr_to_text_failed",
-            extra={"hostname": hostname, "rtype": rtype, "error_type": type(e).__name__},
+            extra={
+                "hostname": hostname,
+                "rtype": rtype,
+                "error_type": type(e).__name__,
+            },
         )
         return []
     return sorted(set(values))
@@ -63,7 +67,10 @@ def collect_all_supported(
 ) -> dict[str, list[str]]:
     settings = settings or get_settings()
     timeout = float(settings.dns_timeout_seconds)
-    return {rtype: collect_rrset(hostname, rtype, timeout=timeout) for rtype in SUPPORTED_RECORD_TYPES}
+    return {
+        rtype: collect_rrset(hostname, rtype, timeout=timeout)
+        for rtype in SUPPORTED_RECORD_TYPES
+    }
 
 
 def snapshot_changed(previous_hash: str | None, new_hash: str) -> bool:

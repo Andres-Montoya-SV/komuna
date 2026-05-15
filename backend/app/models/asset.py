@@ -40,7 +40,9 @@ class Asset(Base):
         nullable=True,
         index=True,
     )
-    asset_type: Mapped[AssetType] = mapped_column(String(32), nullable=False, index=True)
+    asset_type: Mapped[AssetType] = mapped_column(
+        String(32), nullable=False, index=True
+    )
     value: Mapped[str] = mapped_column(String(2048), nullable=False, index=True)
     metadata_json: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
     first_seen_at: Mapped[datetime] = mapped_column(

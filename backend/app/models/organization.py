@@ -39,7 +39,9 @@ class Organization(Base):
         default=uuid.uuid4,
     )
     name: Mapped[str] = mapped_column(String(256), nullable=False)
-    slug: Mapped[str] = mapped_column(String(128), unique=True, index=True, nullable=False)
+    slug: Mapped[str] = mapped_column(
+        String(128), unique=True, index=True, nullable=False
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
@@ -65,7 +67,9 @@ class Organization(Base):
 
 class OrganizationMember(Base):
     __tablename__ = "organization_members"
-    __table_args__ = (UniqueConstraint("organization_id", "user_id", name="uq_org_user"),)
+    __table_args__ = (
+        UniqueConstraint("organization_id", "user_id", name="uq_org_user"),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),

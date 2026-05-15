@@ -41,7 +41,9 @@ def init_firebase(settings: Settings | None = None) -> None:
     )
 
 
-def verify_firebase_id_token(raw_token: str, settings: Settings | None = None) -> dict[str, Any]:
+def verify_firebase_id_token(
+    raw_token: str, settings: Settings | None = None
+) -> dict[str, Any]:
     """Verify JWT and return decoded claims."""
 
     settings = settings or get_settings()
@@ -68,5 +70,7 @@ def verify_firebase_id_token_optional(
     try:
         return verify_firebase_id_token(raw_token, settings)
     except (ValueError, FirebaseError, PermissionError) as e:
-        logger.warning("firebase_token_verify_failed", extra={"error_type": type(e).__name__})
+        logger.warning(
+            "firebase_token_verify_failed", extra={"error_type": type(e).__name__}
+        )
         return None

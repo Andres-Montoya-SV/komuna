@@ -1,3 +1,4 @@
+from app.services import dns_service
 from app.services.domain_validation import (
     assert_domain_allowed_for_operations,
     is_disallowed_hostname,
@@ -5,7 +6,6 @@ from app.services.domain_validation import (
     resolved_addresses_are_safe,
     verify_challenge_txt_presence,
 )
-from app.services import dns_service
 
 
 def test_normalize_domain_lowercases_and_idna():
@@ -21,12 +21,12 @@ def test_normalize_domain_rejects_empty():
 
 
 def test_localhost_rejected():
-    assert is_disallowed_hostname("localhost") != True
+    assert is_disallowed_hostname("localhost") == "localhost is not permitted"
 
 
 def test_private_ip_literal_rejected_message():
     reason = is_disallowed_hostname("127.0.0.1")
-    assert reason is not True
+    assert isinstance(reason, str)
 
 
 def test_assert_operations_raises_on_localhost():
@@ -83,7 +83,9 @@ def test_resolved_addresses_reject_private_loopback(monkeypatch):
             _ = hostname, rtype
             return _Ans("127.0.0.1")
 
-    monkeypatch.setattr("app.services.domain_validation.dns.resolver.Resolver", lambda: FakeResolver())
+    monkeypatch.setattr(
+        "app.services.domain_validation.dns.resolver.Resolver", lambda: FakeResolver()
+    )
     ok, reason = resolved_addresses_are_safe("example.com", timeout=2.0)
     assert ok is False
     assert "unsafe" in reason

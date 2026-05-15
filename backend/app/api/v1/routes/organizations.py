@@ -3,13 +3,18 @@ from __future__ import annotations
 import uuid
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.api.v1.deps import current_user
 from app.db.session import get_session
-from app.models.organization import Organization, OrganizationMember, OrganizationRole, slugify_name
+from app.models.organization import (
+    Organization,
+    OrganizationMember,
+    OrganizationRole,
+    slugify_name,
+)
 from app.models.user import User
 from app.schemas.organization import OrganizationCreate, OrganizationOut
 
@@ -25,7 +30,9 @@ def create_organization(
     base_slug = slugify_name(payload.name)
     slug = base_slug
     for _ in range(25):
-        exists = db.execute(select(Organization).where(Organization.slug == slug)).scalar_one_or_none()
+        exists = db.execute(
+            select(Organization).where(Organization.slug == slug)
+        ).scalar_one_or_none()
         if exists is None:
             break
         slug = f"{base_slug}-{uuid.uuid4().hex[:8]}"

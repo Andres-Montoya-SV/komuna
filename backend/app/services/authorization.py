@@ -10,7 +10,6 @@ from sqlalchemy.orm import Session
 
 from app.models.organization import OrganizationMember, OrganizationRole
 
-
 _ROLE_ORDER: dict[OrganizationRole, int] = {
     OrganizationRole.member: 1,
     OrganizationRole.admin: 2,
@@ -39,7 +38,9 @@ def require_membership(
 ) -> OrganizationMember:
     row = get_membership(db, user_id=user_id, organization_id=organization_id)
     if row is None:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not an organization member")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Not an organization member"
+        )
     return row
 
 
@@ -50,9 +51,13 @@ def require_minimum_role(
     organization_id: uuid.UUID,
     minimum: OrganizationRole,
 ) -> OrganizationMember:
-    membership = require_membership(db, user_id=user_id, organization_id=organization_id)
+    membership = require_membership(
+        db, user_id=user_id, organization_id=organization_id
+    )
     if _ROLE_ORDER.get(membership.role, 0) < _ROLE_ORDER[minimum]:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Insufficient role")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Insufficient role"
+        )
     return membership
 
 

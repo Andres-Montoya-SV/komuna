@@ -4,11 +4,10 @@ from __future__ import annotations
 
 import ipaddress
 import re
-from typing import Iterable
+from collections.abc import Iterable
 
 import dns.resolver
 from dns.exception import DNSException
-
 
 _LABEL_LDH_RE = re.compile(r"^(?!-)[a-z0-9_-]{1,63}(?<!-)$")
 
@@ -47,8 +46,10 @@ def verify_challenge_txt_presence(
         if txt == expected_token:
             return True
         # Some resolvers concatenate chunks; tolerate quotes.
-        condensed = "".join(part.strip('"') for part in txt.replace('" "', "").split('"') if part)
-        condensed = condensed.replace(" ", "").strip("\"")
+        condensed = "".join(
+            part.strip('"') for part in txt.replace('" "', "").split('"') if part
+        )
+        condensed = condensed.replace(" ", "").strip('"')
         if condensed == expected_token:
             return True
     return False
@@ -123,7 +124,9 @@ def _ip_is_unsafe_for_outbound(ip: str) -> bool:
     )
 
 
-def resolved_addresses_are_safe(hostname: str, *, timeout: float = 5.0) -> tuple[bool, str]:
+def resolved_addresses_are_safe(
+    hostname: str, *, timeout: float = 5.0
+) -> tuple[bool, str]:
     """
     Best-effort sync resolution: if any A/AAAA target is unsafe, refuse outbound checks.
     Returns (ok, reason).
@@ -135,7 +138,11 @@ def resolved_addresses_are_safe(hostname: str, *, timeout: float = 5.0) -> tuple
         for rtype in ("A", "AAAA"):
             try:
                 answers = resolver.resolve(hostname, rtype)
-            except (dns.resolver.NXDOMAIN, dns.resolver.NoAnswer, dns.resolver.NoNameservers):
+            except (
+                dns.resolver.NXDOMAIN,
+                dns.resolver.NoAnswer,
+                dns.resolver.NoNameservers,
+            ):
                 continue
             except DNSException as e:
                 return False, f"dns_error_{rtype}:{e.__class__.__name__}"

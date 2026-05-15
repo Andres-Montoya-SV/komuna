@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from sqlalchemy import desc, select
@@ -15,7 +15,11 @@ from app.models.domain import Domain
 from app.models.scan import Scan, ScanStatus, ScanType
 from app.services import finding_service
 from app.services.bucket_service import heuristic_bucket_candidates, probe_candidates
-from app.services.dns_service import collect_all_supported, fingerprint_records, snapshot_changed
+from app.services.dns_service import (
+    collect_all_supported,
+    fingerprint_records,
+    snapshot_changed,
+)
 from app.services.domain_validation import resolved_addresses_are_safe
 from app.services.subdomain_service import sync_fetch_crt_subdomains
 from app.services.tls_service import fetch_certificate, severity_for_expiry_and_trust
@@ -24,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 
 def utcnow() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def _support_hostnames(
@@ -34,7 +38,10 @@ def _support_hostnames(
     discovered_subdomains: list[str],
     scan_type: ScanType,
 ) -> list[str]:
-    hosts: set[str] = {domain.name.lower().rstrip("."), f"www.{domain.name.lower().rstrip('.')}"}
+    hosts: set[str] = {
+        domain.name.lower().rstrip("."),
+        f"www.{domain.name.lower().rstrip('.')}",
+    }
     hosts.update(h.lower().rstrip(".") for h in discovered_subdomains)
 
     if scan_type not in (ScanType.subdomain,):
@@ -147,7 +154,11 @@ def _run_tls_pass(
             evidence=tls_payload,
         )
 
-    summary["tls"] = {"hosts_attempted": len(tls_hosts), "findings": findings, "details": results}
+    summary["tls"] = {
+        "hosts_attempted": len(tls_hosts),
+        "findings": findings,
+        "details": results,
+    }
 
 
 def _run_dns_pass(
@@ -197,7 +208,11 @@ def _run_dns_pass(
             ),
         )
 
-    summary["dns"] = {"record_types_checked": len(records_map), "change_findings": changes, "fingerprints": snap_summary}
+    summary["dns"] = {
+        "record_types_checked": len(records_map),
+        "change_findings": changes,
+        "fingerprints": snap_summary,
+    }
 
 
 def _run_bucket_pass(
@@ -309,32 +324,50 @@ def execute_scan(db: Session, scan: Scan) -> None:
             support_hosts = _support_hostnames(
                 db,
                 domain=domain,
-                discovered_subdomains=discovered if scan.scan_type == ScanType.full else [],
+                discovered_subdomains=(
+                    discovered if scan.scan_type == ScanType.full else []
+                ),
                 scan_type=scan.scan_type,
             )
 
         if scan.scan_type in (ScanType.tls, ScanType.full):
-            _run_tls_pass(db=db, domain=domain, tls_hosts=support_hosts, summary=summary)
+            _run_tls_pass(
+                db=db, domain=domain, tls_hosts=support_hosts, summary=summary
+            )
 
         if scan.scan_type in (ScanType.dns, ScanType.full):
             _run_dns_pass(db=db, domain=domain, summary=summary)
 
         if scan.scan_type in (ScanType.bucket, ScanType.full):
-            _run_bucket_pass(db=db, domain=domain, tls_hosts=support_hosts, summary=summary)
+            _run_bucket_pass(
+                db=db, domain=domain, tls_hosts=support_hosts, summary=summary
+            )
 
         scan.status = ScanStatus.completed
         scan.result_summary = summary
         logger.info(
             "scan_completed",
-            extra={"scan_id": str(scan.id), "domain_id": str(domain.id), "type": scan.scan_type.value},
+            extra={
+                "scan_id": str(scan.id),
+                "domain_id": str(domain.id),
+                "type": scan.scan_type.value,
+            },
         )
     except Exception as e:
         logger.warning(
             "scan_failed_unexpected",
-            extra={"scan_id": str(scan.id), "domain_id": str(domain.id), "error_type": type(e).__name__},
+            extra={
+                "scan_id": str(scan.id),
+                "domain_id": str(domain.id),
+                "error_type": type(e).__name__,
+            },
         )
         scan.status = ScanStatus.failed
-        scan.result_summary = {**summary, "error_type": type(e).__name__, "error": repr(e)}
+        scan.result_summary = {
+            **summary,
+            "error_type": type(e).__name__,
+            "error": repr(e),
+        }
     finally:
         scan.finished_at = utcnow()
 

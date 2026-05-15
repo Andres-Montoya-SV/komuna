@@ -4,14 +4,12 @@ from __future__ import annotations
 
 from logging.config import fileConfig
 
+from alembic import context
 from sqlalchemy import create_engine, pool
 
-from alembic import context
-
+import app.models  # noqa: F401
 from app.core.config import get_settings
 from app.db.base import Base
-
-import app.models  # noqa: F401
 
 config = context.config
 
@@ -45,7 +43,9 @@ def run_migrations_online() -> None:
     engine = create_engine(configuration["sqlalchemy.url"], poolclass=pool.NullPool)
 
     with engine.connect() as connection:
-        context.configure(connection=connection, target_metadata=target_metadata, compare_type=True)
+        context.configure(
+            connection=connection, target_metadata=target_metadata, compare_type=True
+        )
         with context.begin_transaction():
             context.run_migrations()
 

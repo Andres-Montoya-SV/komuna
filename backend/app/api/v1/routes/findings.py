@@ -41,7 +41,9 @@ def update_finding_status(
 ) -> Finding:
     finding = db.get(Finding, finding_id)
     if finding is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Finding not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Finding not found"
+        )
     _ = require_membership(db, user_id=user.id, organization_id=finding.organization_id)
     finding.status = payload.status
     return finding

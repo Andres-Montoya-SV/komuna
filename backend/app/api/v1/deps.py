@@ -23,17 +23,25 @@ async def bearer_token_from_header(
         )
     token = authorization.removeprefix("Bearer ").strip()
     if not token:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing bearer token")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing bearer token"
+        )
     return token
 
 
-async def firebase_claims(token: Annotated[str, Depends(bearer_token_from_header)]) -> dict:
+async def firebase_claims(
+    token: Annotated[str, Depends(bearer_token_from_header)]
+) -> dict:
     try:
         return verify_firebase_id_token(token)
     except PermissionError:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Token not permitted")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Token not permitted"
+        )
     except Exception:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid ID token")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid ID token"
+        )
 
 
 def current_user(
@@ -42,11 +50,15 @@ def current_user(
 ) -> User:
     uid = claims.get("uid")
     if not isinstance(uid, str) or not uid:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Malformed token claims")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Malformed token claims"
+        )
 
     email = claims.get("email")
     if not isinstance(email, str) or not email.strip():
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Email claim required")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Email claim required"
+        )
 
     name = claims.get("name") if isinstance(claims.get("name"), str) else None
 

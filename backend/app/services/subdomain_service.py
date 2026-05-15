@@ -19,7 +19,9 @@ logger = logging.getLogger(__name__)
 def _extract_names(entry: dict[str, Any]) -> list[str]:
     names = entry.get("name_value") or entry.get("common_name") or ""
     raw = names if isinstance(names, str) else str(names)
-    return [part.strip().lower().rstrip(".") for part in raw.split("\n") if part.strip()]
+    return [
+        part.strip().lower().rstrip(".") for part in raw.split("\n") if part.strip()
+    ]
 
 
 async def fetch_crt_subdomains(
@@ -65,7 +67,9 @@ async def fetch_crt_subdomains(
             await c.aclose()
 
 
-def sync_fetch_crt_subdomains(apex_domain: str, *, settings: Settings | None = None) -> list[str]:
+def sync_fetch_crt_subdomains(
+    apex_domain: str, *, settings: Settings | None = None
+) -> list[str]:
     """Synchronous wrapper for worker code paths."""
     settings = settings or get_settings()
     apex = normalize_domain(apex_domain)

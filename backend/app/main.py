@@ -45,7 +45,6 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
 
 def create_application() -> FastAPI:
-    settings = get_settings()
     application = FastAPI(
         title="Exposure Monitor API",
         version="0.1.0-mvp",
