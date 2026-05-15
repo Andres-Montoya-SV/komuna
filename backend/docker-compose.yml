@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: exposure
+      POSTGRES_PASSWORD: exposure
+      POSTGRES_DB: exposure
+    ports:
+      - "5432:5432"
+    volumes:
+      - exposure_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U exposure -d exposure"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  exposure_pg_data:

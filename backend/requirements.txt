@@ -1,0 +1,25 @@
+# FastAPI stack
+fastapi>=0.110.0,<0.116.0
+uvicorn[standard]>=0.27.0,<0.32.0
+pydantic[email]>=2.6.0,<3.0.0
+pydantic-settings>=2.2.0,<3.0.0
+
+# Database
+SQLAlchemy>=2.0.25,<2.1.0
+alembic>=1.13.0,<1.15.0
+psycopg2-binary>=2.9.9,<3.0.0
+
+# Auth
+firebase-admin>=6.4.0,<7.0.0
+
+# HTTP / DNS / crypto
+httpx>=0.26.0,<0.29.0
+dnspython>=2.6.0,<3.0.0
+cryptography>=42.0.0,<44.0.0
+
+# Jobs
+APScheduler>=3.10.4,<4.0.0
+
+# Testing
+pytest>=8.0.0,<9.0.0
+pytest-asyncio>=0.23.0,<0.25.0
