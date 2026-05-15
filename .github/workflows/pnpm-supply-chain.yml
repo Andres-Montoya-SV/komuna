@@ -2,7 +2,9 @@ name: pnpm supply chain
 
 on:
   push:
-    branches: [main, master]
+    branches:
+      - main
+      - master
     paths:
       - "pnpm-lock.yaml"
       - "pnpm-workspace.yaml"

@@ -14,6 +14,7 @@ scan_file() {
   if [[ ! -f "$f" ]]; then
     return 0
   fi
+  local b
   for b in "${BLOCKED[@]}"; do
     if grep -qF "$b" "$f"; then
       echo "Supply chain blocklist: forbidden reference '${b}' in ${f}" >&2
@@ -22,7 +23,7 @@ scan_file() {
   done
 }
 
-while IFS= read -r -d "" f; do
+while IFS= read -r -d $'\0' f; do
   scan_file "$f"
 done < <(find "$ROOT" -name package.json -not -path "*/node_modules/*" -print0)
 

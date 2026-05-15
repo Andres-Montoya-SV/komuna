@@ -4,7 +4,12 @@ name: Lockfile review required
 # `lockfile-reviewed` label so this check turns green before merge.
 on:
   pull_request:
-    types: [opened, synchronize, reopened, labeled, unlabeled]
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - labeled
+      - unlabeled
     paths:
       - "pnpm-lock.yaml"
 
@@ -21,8 +26,12 @@ jobs:
         with:
           script: |
             const labels = context.payload.pull_request.labels.map((l) => l.name);
-            if (!labels.includes("lockfile-reviewed")) {
-              core.setFailed(
-                "This PR modifies pnpm-lock.yaml. After reviewing the diff, a maintainer must add the 'lockfile-reviewed' label.",
-              );
+            if (labels.includes("lockfile-reviewed")) {
+              return;
             }
+            const msg = [
+              "This PR modifies pnpm-lock.yaml.",
+              "After reviewing the diff, a maintainer must add the",
+              "'lockfile-reviewed' label.",
+            ].join(" ");
+            core.setFailed(msg);
