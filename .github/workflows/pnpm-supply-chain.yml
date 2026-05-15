@@ -1,0 +1,52 @@
+name: pnpm supply chain
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "package.json"
+      - ".nvmrc"
+      - "frontend/**"
+      - "packages/**"
+      - "scripts/check-supply-chain-blocklist.sh"
+      - ".github/workflows/pnpm-supply-chain.yml"
+  pull_request:
+    paths:
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "package.json"
+      - ".nvmrc"
+      - "frontend/**"
+      - "packages/**"
+      - "scripts/check-supply-chain-blocklist.sh"
+      - ".github/workflows/pnpm-supply-chain.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  pnpm-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v6.0.8
+        with:
+          version: 11.1.2
+          run_install: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: pnpm
+
+      - name: Install dependencies (frozen lockfile)
+        run: pnpm install --frozen-lockfile
+
+      - name: Audit (moderate or higher fails)
+        run: pnpm audit --audit-level moderate
+
+      - name: Blocklisted dependency namespaces
+        run: bash scripts/check-supply-chain-blocklist.sh

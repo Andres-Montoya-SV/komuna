@@ -1,0 +1,10 @@
+packages:
+  - "frontend"
+  - "packages/*"
+
+# Packages cannot be installed until this many minutes after publish (supply-chain delay).
+minimumReleaseAge: 1440
+
+# pnpm v11+: use allowBuilds (onlyBuiltDependencies was removed). Only listed packages may run install scripts.
+allowBuilds:
+  esbuild: true
